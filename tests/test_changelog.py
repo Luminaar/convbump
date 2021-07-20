@@ -197,6 +197,11 @@ def test_changelog_invalid_commit():
         ChangeLog.from_git_commits([INVALID_COMMIT])
 
 
+def test_changelog_skip_invalid_commit():
+    changelog = ChangeLog.from_git_commits([INVALID_COMMIT], skip_failed=True)
+    assert changelog.commits == ()
+
+
 def test_changelog_with_feature_commit():
     changelog = ChangeLog.from_git_commits([FEATURE_COMMIT])
     assert changelog.has_breaking_change is False
