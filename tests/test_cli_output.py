@@ -1,5 +1,6 @@
 import pytest
-from badabump.cli.output import github_actions_output
+
+from cocobump.cli.output import github_actions_output
 
 
 @pytest.mark.parametrize(

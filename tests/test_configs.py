@@ -1,7 +1,8 @@
 import pytest
-from badabump.configs import ProjectConfig, UpdateConfig
-from badabump.constants import DEFAULT_SEMVER_SCHEMA
-from badabump.enums import VersionTypeEnum
+
+from cocobump.configs import ProjectConfig, UpdateConfig
+from cocobump.constants import DEFAULT_SEMVER_SCHEMA
+from cocobump.enums import VersionTypeEnum
 
 DEFAULT_KWARGS = {
     "is_breaking_change": False,
@@ -30,8 +31,16 @@ def test_project_config_semver_schema_overwrite():
         {"is_breaking_change": True, "is_micro_change": False},
         {"is_minor_change": True, "is_micro_change": False},
         {"is_pre_release": True},
-        {"is_breaking_change": True, "is_micro_change": False, "is_pre_release": True,},
-        {"is_minor_change": True, "is_micro_change": False, "is_pre_release": True,},
+        {
+            "is_breaking_change": True,
+            "is_micro_change": False,
+            "is_pre_release": True,
+        },
+        {
+            "is_minor_change": True,
+            "is_micro_change": False,
+            "is_pre_release": True,
+        },
     ),
 )
 def test_update_config(kwargs):
@@ -45,7 +54,11 @@ def test_update_config(kwargs):
         {"is_breaking_change": True},
         {"is_minor_change": True},
         {"is_breaking_change": True, "is_minor_change": True},
-        {"is_breaking_change": True, "is_minor_change": True, "is_micro_change": False,},
+        {
+            "is_breaking_change": True,
+            "is_minor_change": True,
+            "is_micro_change": False,
+        },
     ),
 )
 def test_update_config_invalid_kwargs(invalid_kwargs):

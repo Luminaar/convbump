@@ -1,5 +1,6 @@
 import pytest
-from badabump.cleaners import clean_body, clean_commit_subject, clean_tag_ref
+
+from cocobump.cleaners import clean_body, clean_commit_subject, clean_tag_ref
 
 COMMIT_BODY = """Other:
 ------
@@ -21,7 +22,8 @@ COMMIT_SUBJECT_WITH_PR = "chore: 20.1.0a2 Release (#5)"
 
 
 @pytest.mark.parametrize(
-    "body, expected", ((COMMIT_BODY, COMMIT_BODY), (COMMIT_BODY_CO_AUTHORIZED, COMMIT_BODY)),
+    "body, expected",
+    ((COMMIT_BODY, COMMIT_BODY), (COMMIT_BODY_CO_AUTHORIZED, COMMIT_BODY)),
 )
 def test_clean_body(body, expected):
     assert clean_body(body.splitlines()) == expected
@@ -29,7 +31,10 @@ def test_clean_body(body, expected):
 
 @pytest.mark.parametrize(
     "subject, expected",
-    ((COMMIT_SUBJECT, COMMIT_SUBJECT), (COMMIT_SUBJECT_WITH_PR, COMMIT_SUBJECT),),
+    (
+        (COMMIT_SUBJECT, COMMIT_SUBJECT),
+        (COMMIT_SUBJECT_WITH_PR, COMMIT_SUBJECT),
+    ),
 )
 def test_clean_commit_subject(subject, expected):
     assert clean_commit_subject(subject) == expected

@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import pytest
-from badabump.git import Git
+
+from cocobump.git import Git
 
 CommitTuple = Tuple[str, Optional[str], str]
 TagTuple = Tuple[str, str]

@@ -2,8 +2,9 @@ import datetime
 
 import pytest
 import time_machine
-from badabump.configs import UpdateConfig
-from badabump.versions.calver import SHORT_YEAR_START, CalVer
+
+from cocobump.configs import UpdateConfig
+from cocobump.versions.calver import SHORT_YEAR_START, CalVer
 
 UTCNOW = datetime.datetime.utcnow()
 

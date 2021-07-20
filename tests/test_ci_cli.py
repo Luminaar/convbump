@@ -1,7 +1,8 @@
 from pathlib import Path
 
 import pytest
-from badabump.cli.ci_app import main
+
+from cocobump.cli.ci_app import main
 
 
 @pytest.fixture()

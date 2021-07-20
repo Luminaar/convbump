@@ -5,13 +5,14 @@ from pathlib import Path
 import attr
 import pytest
 import toml
-from badabump.configs import ProjectConfig, UpdateConfig
-from badabump.enums import ProjectTypeEnum, VersionTypeEnum
-from badabump.versions.calver import SHORT_YEAR_START, CalVer
-from badabump.versions.exceptions import VersionParseError
-from badabump.versions.pre_release import PreRelease, PreReleaseTypeEnum
-from badabump.versions.semver import SemVer
-from badabump.versions.version import (
+
+from cocobump.configs import ProjectConfig, UpdateConfig
+from cocobump.enums import ProjectTypeEnum, VersionTypeEnum
+from cocobump.versions.calver import SHORT_YEAR_START, CalVer
+from cocobump.versions.exceptions import VersionParseError
+from cocobump.versions.pre_release import PreRelease, PreReleaseTypeEnum
+from cocobump.versions.semver import SemVer
+from cocobump.versions.version import (
     Version,
     find_project_version,
     guess_version_from_tag,
@@ -26,7 +27,9 @@ def test_find_project_version_javascript(tmpdir, version):
     (tmp_path / "package.json").write_text(json.dumps({"version": version}))
 
     config = attr.evolve(
-        SEMVER_PROJECT_CONFIG, path=tmp_path, project_type=ProjectTypeEnum.javascript,
+        SEMVER_PROJECT_CONFIG,
+        path=tmp_path,
+        project_type=ProjectTypeEnum.javascript,
     )
     project_version = find_project_version(config=config)
 
@@ -42,7 +45,9 @@ def test_find_project_version_python(tmpdir, version):
     )
 
     config = attr.evolve(
-        SEMVER_PROJECT_CONFIG, path=tmp_path, project_type=ProjectTypeEnum.python,
+        SEMVER_PROJECT_CONFIG,
+        path=tmp_path,
+        project_type=ProjectTypeEnum.python,
     )
     project_version = find_project_version(config=config)
 
@@ -58,7 +63,10 @@ def test_find_project_version_empty(tmpdir, project_type):
 
 @pytest.mark.parametrize(
     "config, is_pre_release, expected",
-    ((SEMVER_PROJECT_CONFIG, False, "1.0.0"), (SEMVER_PROJECT_CONFIG, True, "1.0.0a0"),),
+    (
+        (SEMVER_PROJECT_CONFIG, False, "1.0.0"),
+        (SEMVER_PROJECT_CONFIG, True, "1.0.0a0"),
+    ),
 )
 def test_guess_initial_version(tmpdir, config, is_pre_release, expected):
     tmp_config = attr.evolve(config, path=Path(tmpdir))
@@ -84,7 +92,11 @@ def test_guess_version_from_tag(value, tag_format, expected):
 
 
 @pytest.mark.parametrize(
-    "invalid_value, tag_format", (("1.2.3", "v{version}"), ("v20.10.20", "release/{version}"),),
+    "invalid_value, tag_format",
+    (
+        ("1.2.3", "v{version}"),
+        ("v20.10.20", "release/{version}"),
+    ),
 )
 def test_guess_version_from_tag_invalid_value(invalid_value, tag_format):
     with pytest.raises(ValueError):
@@ -99,7 +111,11 @@ def test_parse_version_parse_error():
 @pytest.mark.parametrize(
     "tag, config, expected",
     (
-        ("v20.1.0", ProjectConfig(), Version(version=CalVer(year=2020, minor=1, micro=0)),),
+        (
+            "v20.1.0",
+            ProjectConfig(),
+            Version(version=CalVer(year=2020, minor=1, micro=0)),
+        ),
         (
             "v20.1.0b2",
             ProjectConfig(),
@@ -140,29 +156,61 @@ def test_version_from_tag(tag, config, expected):
         ("1.0a0", UpdateConfig(), "1.0"),
         ("1.0a0", UpdateConfig(is_pre_release=True), "1.0a1"),
         # Minor change
-        ("1.1", UpdateConfig(is_minor_change=True, is_micro_change=False), "2.0",),
         (
             "1.1",
-            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_minor_change=True, is_micro_change=False),
+            "2.0",
+        ),
+        (
+            "1.1",
+            UpdateConfig(
+                is_minor_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "2.0a0",
         ),
-        ("1.1a0", UpdateConfig(is_minor_change=True, is_micro_change=False), "1.1",),
         (
             "1.1a0",
-            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_minor_change=True, is_micro_change=False),
+            "1.1",
+        ),
+        (
+            "1.1a0",
+            UpdateConfig(
+                is_minor_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "1.1a1",
         ),
         # Breaking change
-        ("1.1", UpdateConfig(is_breaking_change=True, is_micro_change=False), "2.0",),
         (
             "1.1",
-            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False),
+            "2.0",
+        ),
+        (
+            "1.1",
+            UpdateConfig(
+                is_breaking_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "2.0a0",
         ),
-        ("1.1a0", UpdateConfig(is_breaking_change=True, is_micro_change=False), "1.1",),
         (
             "1.1a0",
-            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False),
+            "1.1",
+        ),
+        (
+            "1.1a0",
+            UpdateConfig(
+                is_breaking_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "1.1b0",
         ),
     ),
@@ -187,29 +235,61 @@ def test_version_update_calver(current_suffix, update_config, expected_suffix):
         ("1.0.0a0", UpdateConfig(), "1.0.0"),
         ("1.0.0a0", UpdateConfig(is_pre_release=True), "1.0.0a1"),
         # Minor change
-        ("1.0.0", UpdateConfig(is_minor_change=True, is_micro_change=False), "1.1.0",),
         (
             "1.0.0",
-            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_minor_change=True, is_micro_change=False),
+            "1.1.0",
+        ),
+        (
+            "1.0.0",
+            UpdateConfig(
+                is_minor_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "1.1.0a0",
         ),
-        ("1.0.0a0", UpdateConfig(is_minor_change=True, is_micro_change=False), "1.0.0",),
         (
             "1.0.0a0",
-            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_minor_change=True, is_micro_change=False),
+            "1.0.0",
+        ),
+        (
+            "1.0.0a0",
+            UpdateConfig(
+                is_minor_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "1.0.0a1",
         ),
         # Breaking change
-        ("1.0.0", UpdateConfig(is_breaking_change=True, is_micro_change=False), "2.0.0",),
         (
             "1.0.0",
-            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False),
+            "2.0.0",
+        ),
+        (
+            "1.0.0",
+            UpdateConfig(
+                is_breaking_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "2.0.0a0",
         ),
-        ("1.0.0a0", UpdateConfig(is_breaking_change=True, is_micro_change=False), "1.0.0",),
         (
             "1.0.0a0",
-            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False),
+            "1.0.0",
+        ),
+        (
+            "1.0.0a0",
+            UpdateConfig(
+                is_breaking_change=True,
+                is_micro_change=False,
+                is_pre_release=True,
+            ),
             "1.0.0b0",
         ),
     ),
