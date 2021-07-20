@@ -1,5 +1,4 @@
 import pytest
-
 from badabump.cli.output import github_actions_output
 
 

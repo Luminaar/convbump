@@ -12,17 +12,11 @@ from ..enums import ChangeLogTypeEnum
 from ..git import Git
 from ..versions import Version
 from .arguments import add_path_argument
-from .commands import (
-    run_post_bump_hook,
-    update_changelog_file,
-    update_version_files,
-)
-from .output import echo_value, EMPTY, github_actions_output
+from .commands import run_post_bump_hook, update_changelog_file, update_version_files
+from .output import EMPTY, echo_value, github_actions_output
 
 
-def create_update_config(
-    changelog: ChangeLog, is_pre_release: bool
-) -> UpdateConfig:
+def create_update_config(changelog: ChangeLog, is_pre_release: bool) -> UpdateConfig:
     kwargs = {
         "is_breaking_change": False,
         "is_minor_change": False,
@@ -50,9 +44,7 @@ def parse_args(argv: Argv) -> argparse.Namespace:
             "Designed to run at GitHub Actions."
         ),
     )
-    parser.add_argument(
-        "-v", "--version", action="version", version=__version__
-    )
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     add_path_argument(parser)
     parser.add_argument(
         "-d",
@@ -102,11 +94,7 @@ def main(argv: Argv = None) -> int:
 
     echo_value(
         "Current version: ",
-        (
-            current_version.format(config=project_config)
-            if current_version
-            else EMPTY
-        ),
+        (current_version.format(config=project_config) if current_version else EMPTY),
         is_ci=args.is_ci,
         ci_name="current_version",
     )
@@ -166,9 +154,7 @@ def main(argv: Argv = None) -> int:
 
     # Applying changes to version files
     if not args.is_ci and not args.is_dry_run:
-        update_message = (
-            "Are you sure to update version files and changelog? [y/N] "
-        )
+        update_message = "Are you sure to update version files and changelog? [y/N] "
         if input(update_message).lower() != "y":
             print("OK! OK! Exit...")
             return 0
@@ -184,9 +170,7 @@ def main(argv: Argv = None) -> int:
     run_post_bump_hook(project_config, is_dry_run=args.is_dry_run)
 
     # Update changelog
-    update_changelog_file(
-        project_config, next_version, changelog, is_dry_run=args.is_dry_run
-    )
+    update_changelog_file(project_config, next_version, changelog, is_dry_run=args.is_dry_run)
 
     # Supply necessary CI output
     if args.is_ci:
@@ -198,9 +182,7 @@ def main(argv: Argv = None) -> int:
             "next_tag_message",
             "\n\n".join(
                 (
-                    project_config.tag_subject_format.format(
-                        version=next_version_str
-                    ),
+                    project_config.tag_subject_format.format(version=next_version_str),
                     git_changelog,
                 )
             ),

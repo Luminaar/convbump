@@ -5,7 +5,7 @@ from typing import Optional, Set, Tuple
 import toml
 
 from ..changelog import ChangeLog, in_development_header, version_header
-from ..configs import find_changelog_file, ProjectConfig
+from ..configs import ProjectConfig, find_changelog_file
 from ..constants import (
     CHANGELOG_UPPER,
     FILE_PACKAGE_JSON,
@@ -58,14 +58,10 @@ def guess_version_files(config: ProjectConfig) -> Tuple[str, ...]:
                 package_path = path / package
 
                 if (package_path / project_name / "__init__.py").exists():
-                    version_files.append(
-                        f"{package}/{project_name}/__init__.py"
-                    )
+                    version_files.append(f"{package}/{project_name}/__init__.py")
 
                 if (package_path / project_name / "__version__.py").exists():
-                    version_files.append(
-                        f"{package}/{project_name}/__version__.py"
-                    )
+                    version_files.append(f"{package}/{project_name}/__version__.py")
 
                 if (package_path / f"{project_name}.py").exists():
                     version_files.append(f"{package}/{project_name}.py")
@@ -73,9 +69,7 @@ def guess_version_files(config: ProjectConfig) -> Tuple[str, ...]:
     return tuple(version_files)
 
 
-def run_post_bump_hook(
-    config: ProjectConfig, *, is_dry_run: bool = False
-) -> None:
+def run_post_bump_hook(config: ProjectConfig, *, is_dry_run: bool = False) -> None:
     """Run post-bump hook after version files already updated.
 
     Read command to execute from project config, or if it is not specified
@@ -118,8 +112,7 @@ def update_changelog_file(
     next_version_str = next_version.format(config=config)
 
     echo_message(
-        f"Adding {next_version_str} release notes to {changelog_path.name} "
-        "file",
+        f"Adding {next_version_str} release notes to {changelog_path.name} " "file",
         is_dry_run=is_dry_run,
     )
     if is_dry_run:
@@ -165,9 +158,7 @@ def update_changelog_file(
     if not changelog_path.exists():
         changelog_path.write_text(f"{next_version_changelog.strip()}\n")
     else:
-        if not update_file(
-            changelog_path, f"{dev_header}\n\n", next_version_changelog
-        ):
+        if not update_file(changelog_path, f"{dev_header}\n\n", next_version_changelog):
             changelog_path.write_text(
                 "".join((next_version_changelog, changelog_path.read_text()))
             )
@@ -226,14 +217,10 @@ def update_version_files(
 
     for item in version_files:
         if item.startswith("..") or item.startswith("/"):
-            raise ConfigError(
-                "Version file outside of project directory is forbidden: "
-                f"{item}"
-            )
+            raise ConfigError("Version file outside of project directory is forbidden: " f"{item}")
 
         echo_message(
-            f"Updating version in {item}: {current_version_str} -> "
-            f"{next_version_str}",
+            f"Updating version in {item}: {current_version_str} -> " f"{next_version_str}",
             is_dry_run=is_dry_run,
         )
         if is_dry_run:

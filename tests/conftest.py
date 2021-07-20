@@ -3,9 +3,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import pytest
-
 from badabump.git import Git
-
 
 CommitTuple = Tuple[str, Optional[str], str]
 TagTuple = Tuple[str, str]
@@ -42,8 +40,6 @@ def create_git_repository(tmpdir, create_git_commit, create_git_tag):
 @pytest.fixture()
 def create_git_tag():
     def factory(path: Path, tag: str, message: str) -> None:
-        subprocess.check_call(
-            ["git", "tag", "-a", tag, "-m", message], cwd=path
-        )
+        subprocess.check_call(["git", "tag", "-a", tag, "-m", message], cwd=path)
 
     return factory

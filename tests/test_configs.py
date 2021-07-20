@@ -1,9 +1,7 @@
 import pytest
-
 from badabump.configs import ProjectConfig, UpdateConfig
 from badabump.constants import DEFAULT_SEMVER_SCHEMA
 from badabump.enums import VersionTypeEnum
-
 
 DEFAULT_KWARGS = {
     "is_breaking_change": False,
@@ -15,16 +13,13 @@ DEFAULT_KWARGS = {
 
 def test_project_config_semver_schema():
     assert (
-        ProjectConfig(version_type=VersionTypeEnum.semver).version_schema
-        == DEFAULT_SEMVER_SCHEMA
+        ProjectConfig(version_type=VersionTypeEnum.semver).version_schema == DEFAULT_SEMVER_SCHEMA
     )
 
 
 def test_project_config_semver_schema_overwrite():
     assert (
-        ProjectConfig(
-            version_type=VersionTypeEnum.semver, version_schema="XYZ"
-        ).version_schema
+        ProjectConfig(version_type=VersionTypeEnum.semver, version_schema="XYZ").version_schema
         == DEFAULT_SEMVER_SCHEMA
     )
 

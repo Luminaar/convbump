@@ -1,7 +1,5 @@
 import pytest
-
 from badabump.cleaners import clean_body, clean_commit_subject, clean_tag_ref
-
 
 COMMIT_BODY = """Other:
 ------

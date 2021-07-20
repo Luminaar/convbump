@@ -38,12 +38,8 @@ class ProjectConfig:
     pr_branch_format: str = DEFAULT_PR_BRANCH_FORMAT
     pr_title_format: str = DEFAULT_PR_TITLE_FORMAT
 
-    changelog_format_type_file: FormatTypeEnum = (
-        DEFAULT_CHANGELOG_FORMAT_TYPE_FILE
-    )
-    changelog_format_type_git: FormatTypeEnum = (
-        DEFAULT_CHANGELOG_FORMAT_TYPE_GIT
-    )
+    changelog_format_type_file: FormatTypeEnum = DEFAULT_CHANGELOG_FORMAT_TYPE_FILE
+    changelog_format_type_git: FormatTypeEnum = DEFAULT_CHANGELOG_FORMAT_TYPE_GIT
     changelog_file_include_date: bool = DEFAULT_CHANGELOG_FILE_INCLUDE_DATE
 
     post_bump_hook: Optional[str] = None
@@ -67,25 +63,16 @@ class ProjectConfig:
 
         return cls(
             path=path,
-            project_type=guess_project_type(
-                config_data.get("project_type"), path=path
-            ),
+            project_type=guess_project_type(config_data.get("project_type"), path=path),
             version_type=guess_version_type(config_data.get("version_type")),
-            version_schema=(
-                config_data.get("version_schema") or DEFAULT_VERSION_SCHEMA
-            ),
+            version_schema=(config_data.get("version_schema") or DEFAULT_VERSION_SCHEMA),
             version_files=tuple(config_data.get("version_files") or ()),
             tag_format=config_data.get("tag_format") or DEFAULT_TAG_FORMAT,
             tag_subject_format=(
-                config_data.get("tag_subject_format")
-                or DEFAULT_TAG_SUBJECT_FORMAT
+                config_data.get("tag_subject_format") or DEFAULT_TAG_SUBJECT_FORMAT
             ),
-            pr_branch_format=(
-                config_data.get("pr_branch_format") or DEFAULT_PR_BRANCH_FORMAT
-            ),
-            pr_title_format=(
-                config_data.get("pr_title_format") or DEFAULT_PR_TITLE_FORMAT
-            ),
+            pr_branch_format=(config_data.get("pr_branch_format") or DEFAULT_PR_BRANCH_FORMAT),
+            pr_title_format=(config_data.get("pr_title_format") or DEFAULT_PR_TITLE_FORMAT),
             changelog_format_type_file=guess_changelog_format_type_file(
                 config_data.get("changelog_format_type_file"), path
             ),
@@ -123,9 +110,7 @@ class UpdateConfig:
             )
 
 
-def guess_changelog_format_type_file(
-    value: Optional[str], path: Path
-) -> FormatTypeEnum:
+def guess_changelog_format_type_file(value: Optional[str], path: Path) -> FormatTypeEnum:
     if value:
         return FormatTypeEnum[value]
 

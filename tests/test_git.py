@@ -2,7 +2,6 @@ import subprocess
 
 import pytest
 
-
 COMMITS = (
     "feat: Initial commit",
     "feat: Add new file",
@@ -30,9 +29,7 @@ def test_empty_repository(create_git_repository):
 
 
 def test_list_commits(create_git_repository):
-    git = create_git_repository(
-        ("1.txt", None, COMMITS[0]), ("2.txt", None, COMMITS[1])
-    )
+    git = create_git_repository(("1.txt", None, COMMITS[0]), ("2.txt", None, COMMITS[1]))
 
     commit_id = subprocess.check_output(
         ["git", "rev-list", "--max-parents=0", "HEAD"], cwd=git.path
@@ -54,16 +51,12 @@ def test_retrieve_last_commit(create_git_repository):
 
 
 def test_retrieve_last_tag(create_git_repository):
-    git = create_git_repository(
-        ("1.txt", None, COMMITS[0]), tag=("v1.0.0", "1.0.0 Release")
-    )
+    git = create_git_repository(("1.txt", None, COMMITS[0]), tag=("v1.0.0", "1.0.0 Release"))
     assert git.retrieve_last_tag() == "v1.0.0"
 
 
 def test_retrieve_last_tag_or_none(create_git_repository):
-    git = create_git_repository(
-        ("1.txt", None, COMMITS[0]), tag=("v1.0.0", "1.0.0 Release")
-    )
+    git = create_git_repository(("1.txt", None, COMMITS[0]), tag=("v1.0.0", "1.0.0 Release"))
     assert git.retrieve_last_tag_or_none() == "v1.0.0"
 
 
@@ -87,11 +80,7 @@ Features:
         ),
     ),
 )
-def test_retrieve_tag_details(
-    create_git_repository, message, expected_subject, expected_body
-):
-    git = create_git_repository(
-        ("1.txt", None, COMMITS[0]), tag=("v1.0.0", message)
-    )
+def test_retrieve_tag_details(create_git_repository, message, expected_subject, expected_body):
+    git = create_git_repository(("1.txt", None, COMMITS[0]), tag=("v1.0.0", message))
     assert git.retrieve_tag_subject("v1.0.0") == expected_subject
     assert git.retrieve_tag_body("v1.0.0") == expected_body

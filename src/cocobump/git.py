@@ -13,9 +13,7 @@ class Git:
     def list_commits(self, from_ref: str) -> Tuple[str, ...]:
         def iter_commtis(commit_ids: List[str]) -> Iterator[str]:
             for commit_id in commit_ids:
-                yield self._check_output(
-                    ["git", "log", "-1", "--format=%B", commit_id]
-                )
+                yield self._check_output(["git", "log", "-1", "--format=%B", commit_id])
 
         commit_ids = self._check_output(
             ["git", "log", "--format=%H", f"{from_ref}..HEAD"]
@@ -34,14 +32,10 @@ class Git:
         return None
 
     def retrieve_tag_body(self, tag: str) -> str:
-        return self._check_output(
-            ["git", "tag", "-l", "--format=%(body)", tag]
-        )
+        return self._check_output(["git", "tag", "-l", "--format=%(body)", tag])
 
     def retrieve_tag_subject(self, tag: str) -> str:
-        return self._check_output(
-            ["git", "tag", "-l", "--format=%(subject)", tag]
-        )
+        return self._check_output(["git", "tag", "-l", "--format=%(subject)", tag])
 
     def _check_output(self, args: List[str]) -> str:
         maybe_output = subprocess.check_output(args, cwd=self.path)

@@ -1,6 +1,5 @@
 from difflib import ndiff
 
-
 EMPTY = "-"
 VALUE_ESCAPE_MAPPING = (("%", "%25"), ("\n", "%0A"), ("\r", "%0D"))
 
@@ -18,9 +17,7 @@ def echo_message(message: str, *, is_dry_run: bool) -> None:
     print(f"{prefix}{message}")
 
 
-def echo_value(
-    label: str, value: str, *, is_ci: bool = False, ci_name: str = None
-) -> None:
+def echo_value(label: str, value: str, *, is_ci: bool = False, ci_name: str = None) -> None:
     if is_ci and ci_name:
         github_actions_output(ci_name, value)
     else:

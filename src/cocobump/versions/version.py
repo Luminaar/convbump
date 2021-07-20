@@ -1,6 +1,6 @@
 import json
 from contextlib import suppress
-from typing import cast, Optional, Type, Union
+from typing import Optional, Type, Union, cast
 
 import attr
 import toml
@@ -15,7 +15,6 @@ from .exceptions import VersionError, VersionParseError
 from .parsing import parse_version
 from .pre_release import PreRelease
 from .semver import SemVer
-
 
 CalOrSemVer = Union[CalVer, SemVer]
 
@@ -41,9 +40,7 @@ class Version:
         return self.version.format()
 
     @classmethod
-    def guess_initial_version(
-        cls, *, config: ProjectConfig, is_pre_release: bool
-    ) -> "Version":
+    def guess_initial_version(cls, *, config: ProjectConfig, is_pre_release: bool) -> "Version":
         version = guess_initial_version(config)
         if version.pre_release is None and is_pre_release:
             return attr.evolve(version, pre_release=PreRelease())
@@ -65,17 +62,13 @@ class Version:
         with suppress(VersionError):
             return cls(version=version_cls.parse(value, schema=schema))
 
-        full_schema = (
-            f"{schema}{pre_release.SCHEMA_MAPPING[config.project_type]}"
-        )
+        full_schema = f"{schema}{pre_release.SCHEMA_MAPPING[config.project_type]}"
         full_schema_parts.update(pre_release.SCHEMA_PARTS_PARSING)
 
         maybe_parsed = parse_version(full_schema, full_schema_parts, value)
         if maybe_parsed:
             return cls(
-                version=version_cls.from_parsed_dict(
-                    maybe_parsed, schema=schema
-                ),
+                version=version_cls.from_parsed_dict(maybe_parsed, schema=schema),
                 pre_release=pre_release.PreRelease.from_parsed_dict(
                     maybe_parsed, project_type=config.project_type
                 ),
@@ -92,9 +85,7 @@ class Version:
 
         if config.is_pre_release:
             return Version(
-                version=self.version.update(
-                    attr.evolve(config, is_pre_release=False)
-                ),
+                version=self.version.update(attr.evolve(config, is_pre_release=False)),
                 pre_release=PreRelease(),
             )
 
@@ -106,9 +97,7 @@ def find_project_version(config: ProjectConfig) -> Optional[str]:
         package_json_path = config.path / "package.json"
         if package_json_path.exists():
             try:
-                return cast(
-                    str, json.loads(package_json_path.read_text())["version"]
-                )
+                return cast(str, json.loads(package_json_path.read_text())["version"])
             except (KeyError, ValueError):
                 ...
     else:
@@ -117,9 +106,7 @@ def find_project_version(config: ProjectConfig) -> Optional[str]:
             try:
                 return cast(
                     str,
-                    toml.loads(pyproject_toml_path.read_text())["tool"][
-                        "poetry"
-                    ]["version"],
+                    toml.loads(pyproject_toml_path.read_text())["tool"]["poetry"]["version"],
                 )
             except (KeyError, ValueError):
                 ...

@@ -5,19 +5,17 @@ from pathlib import Path
 import attr
 import pytest
 import toml
-
 from badabump.configs import ProjectConfig, UpdateConfig
 from badabump.enums import ProjectTypeEnum, VersionTypeEnum
-from badabump.versions.calver import CalVer, SHORT_YEAR_START
+from badabump.versions.calver import SHORT_YEAR_START, CalVer
 from badabump.versions.exceptions import VersionParseError
 from badabump.versions.pre_release import PreRelease, PreReleaseTypeEnum
 from badabump.versions.semver import SemVer
 from badabump.versions.version import (
+    Version,
     find_project_version,
     guess_version_from_tag,
-    Version,
 )
-
 
 SEMVER_PROJECT_CONFIG = ProjectConfig(version_type=VersionTypeEnum.semver)
 
@@ -56,9 +54,7 @@ def test_find_project_version_python(tmpdir, version):
     assert project_version == version
 
 
-@pytest.mark.parametrize(
-    "project_type", (ProjectTypeEnum.javascript, ProjectTypeEnum.python)
-)
+@pytest.mark.parametrize("project_type", (ProjectTypeEnum.javascript, ProjectTypeEnum.python))
 def test_find_project_version_empty(tmpdir, project_type):
     config = attr.evolve(SEMVER_PROJECT_CONFIG, path=Path(tmpdir))
     assert find_project_version(config=config) is None
@@ -74,9 +70,9 @@ def test_find_project_version_empty(tmpdir, project_type):
 def test_guess_initial_version(tmpdir, config, is_pre_release, expected):
     tmp_config = attr.evolve(config, path=Path(tmpdir))
     assert (
-        Version.guess_initial_version(
-            config=tmp_config, is_pre_release=is_pre_release
-        ).format(config=config)
+        Version.guess_initial_version(config=tmp_config, is_pre_release=is_pre_release).format(
+            config=config
+        )
         == expected
     )
 
@@ -124,19 +120,13 @@ def test_parse_version_parse_error():
             ProjectConfig(),
             Version(
                 version=CalVer(year=2020, minor=1, micro=0),
-                pre_release=PreRelease(
-                    pre_release_type=PreReleaseTypeEnum.beta, number=2
-                ),
+                pre_release=PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=2),
             ),
         ),
         (
             "release/20.10.20",
-            ProjectConfig(
-                tag_format="release/{version}", version_schema="YY.MM.DD"
-            ),
-            Version(
-                version=CalVer(year=2020, month=10, day=20, schema="YY.MM.DD")
-            ),
+            ProjectConfig(tag_format="release/{version}", version_schema="YY.MM.DD"),
+            Version(version=CalVer(year=2020, month=10, day=20, schema="YY.MM.DD")),
         ),
         (
             "1.2.3-alpha.4",
@@ -147,9 +137,7 @@ def test_parse_version_parse_error():
             ),
             Version(
                 version=SemVer(major=1, minor=2, patch=3),
-                pre_release=PreRelease(
-                    pre_release_type=PreReleaseTypeEnum.alpha, number=4
-                ),
+                pre_release=PreRelease(pre_release_type=PreReleaseTypeEnum.alpha, number=4),
             ),
         ),
     ),

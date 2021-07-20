@@ -1,11 +1,9 @@
 from typing import Tuple
 
 import pytest
-
 from badabump.configs import UpdateConfig
 from badabump.enums import ProjectTypeEnum
 from badabump.versions.pre_release import PreRelease, PreReleaseTypeEnum
-
 
 PRE_RELEASES: Tuple[Tuple[PreRelease, ProjectTypeEnum, str], ...] = (
     (
@@ -62,16 +60,12 @@ PRE_RELEASES: Tuple[Tuple[PreRelease, ProjectTypeEnum, str], ...] = (
 
 
 @pytest.mark.parametrize("pre_release, project_type, expected", PRE_RELEASES)
-def test_pre_release_format(
-    pre_release: PreRelease, project_type: ProjectTypeEnum, expected: str
-):
+def test_pre_release_format(pre_release: PreRelease, project_type: ProjectTypeEnum, expected: str):
     assert pre_release.format(project_type=project_type) == expected
 
 
 @pytest.mark.parametrize("expected, project_type, pre_release", PRE_RELEASES)
-def test_pre_release_parse(
-    expected: PreRelease, project_type: ProjectTypeEnum, pre_release: str
-):
+def test_pre_release_parse(expected: PreRelease, project_type: ProjectTypeEnum, pre_release: str):
     assert PreRelease.parse(pre_release, project_type=project_type) == expected
 
 
@@ -79,9 +73,7 @@ def test_pre_release_parse(
     "project_type, invalid_value",
     ((ProjectTypeEnum.javascript, "a0"), (ProjectTypeEnum.python, "-beta.0")),
 )
-def test_pre_release_parse_value_error(
-    project_type: ProjectTypeEnum, invalid_value: str
-):
+def test_pre_release_parse_value_error(project_type: ProjectTypeEnum, invalid_value: str):
     with pytest.raises(ValueError):
         PreRelease.parse(invalid_value, project_type=project_type)
 
@@ -225,7 +217,5 @@ def test_pre_release_update(
         ),
     ),
 )
-def test_pre_release_update_not_pre_release(
-    current: PreRelease, update_config: UpdateConfig
-):
+def test_pre_release_update_not_pre_release(current: PreRelease, update_config: UpdateConfig):
     assert current.update(update_config) is None

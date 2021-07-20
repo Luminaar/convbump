@@ -6,7 +6,6 @@ import attr
 
 from .enums import ChangeLogTypeEnum, FormatTypeEnum
 
-
 BREAKING_CHANGE_IN_BODY = "BREAKING CHANGE:"
 BREAKING_CHANGE_IN_COMMIT_TYPE = "!"
 
@@ -16,16 +15,10 @@ COMMIT_TYPE_FEATURE = "feat"
 COMMIT_TYPE_FIX = "fix"
 COMMIT_TYPE_REFACTOR = "refactor"
 
-COMMIT_TYPE_SUBJECT_RE = re.compile(
-    r"^(?P<commit_type>[^\:]+)\: (?P<description>.+)$"
-)
-COMMIT_TYPE_SCOPE_RE = re.compile(
-    r"^(?P<commit_type>[^\(]+)\((?P<scope>[^\)]+)\)$"
-)
+COMMIT_TYPE_SUBJECT_RE = re.compile(r"^(?P<commit_type>[^\:]+)\: (?P<description>.+)$")
+COMMIT_TYPE_SCOPE_RE = re.compile(r"^(?P<commit_type>[^\(]+)\((?P<scope>[^\)]+)\)$")
 
-ISSUE_RE = re.compile(
-    r"^(Closes|Fixes|Issue|Ref|Relates): (?P<issue>.+)$", re.M
-)
+ISSUE_RE = re.compile(r"^(Closes|Fixes|Issue|Ref|Relates): (?P<issue>.+)$", re.M)
 
 
 @attr.dataclass(frozen=True, slots=True)
@@ -147,9 +140,7 @@ class ChangeLog:
         is_git_commit = changelog_type == ChangeLogTypeEnum.git_commit
         is_rst = format_type == FormatTypeEnum.rst
 
-        def format_block(
-            label: str, commits: Tuple[ConventionalCommit, ...]
-        ) -> Optional[str]:
+        def format_block(label: str, commits: Tuple[ConventionalCommit, ...]) -> Optional[str]:
             if not commits:
                 return None
 
@@ -163,38 +154,27 @@ class ChangeLog:
             else:
                 header = markdown_h2(label)
 
-            breaking_items = format_commits(
-                item for item in commits if item.is_breaking_change
-            )
-            regular_items = format_commits(
-                item for item in commits if not item.is_breaking_change
-            )
-            items = "\n".join(
-                item for item in (breaking_items, regular_items) if item
-            )
+            breaking_items = format_commits(item for item in commits if item.is_breaking_change)
+            regular_items = format_commits(item for item in commits if not item.is_breaking_change)
+            items = "\n".join(item for item in (breaking_items, regular_items) if item)
 
             return "\n\n".join((header, items))
 
         def format_commits(commits: Iterator[ConventionalCommit]) -> str:
-            return "\n".join(
-                ul_li(item.format(format_type)) for item in commits
-            )
+            return "\n".join(ul_li(item.format(format_type)) for item in commits)
 
         features = format_block("Features:", self.feature_commits)
         fixes = format_block("Fixes:", self.fix_commits)
         refactor = format_block("Refactoring:", self.refactor_commits)
         others = format_block("Other:", self.other_commits)
 
-        return "\n\n".join(
-            item for item in (features, fixes, refactor, others) if item
-        )
+        return "\n\n".join(item for item in (features, fixes, refactor, others) if item)
 
     @classmethod
     def from_git_commits(cls, git_commits: Tuple[str, ...]) -> "ChangeLog":
         return cls(
             commits=tuple(
-                ConventionalCommit.from_git_commit(item)
-                for item in reversed(git_commits)
+                ConventionalCommit.from_git_commit(item) for item in reversed(git_commits)
             )
         )
 
@@ -217,11 +197,7 @@ def bold(value: str) -> str:
 
 def in_development_header(version: str, format_type: FormatTypeEnum) -> str:
     content = f"{version} (In Development)"
-    return (
-        rst_h1(content)
-        if format_type == FormatTypeEnum.rst
-        else markdown_h1(content)
-    )
+    return rst_h1(content) if format_type == FormatTypeEnum.rst else markdown_h1(content)
 
 
 def markdown_h1(value: str, *, git_safe: bool = False) -> str:

@@ -1,10 +1,8 @@
 import io
 
 import pytest
-
 from badabump.cli.app import main
 from badabump.enums import ProjectTypeEnum
-
 
 BADABUMP_CONFIG_SEMVER_TOML = """[tool.badabump]
 version_type = "semver"
@@ -22,14 +20,11 @@ version = "{version}"
 """
 
 
-def test_breaking_change_dry_run(
-    capsys, create_git_commit, create_git_repository
-):
+def test_breaking_change_dry_run(capsys, create_git_commit, create_git_repository):
     git = create_git_repository(
         (
             "pyproject.toml",
-            BADABUMP_CONFIG_SEMVER_TOML
-            + PYPROJECT_TOML.format(version="1.0.0"),
+            BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0"),
             "feat: Initial commit",
         ),
         tag=("v1.0.0", "1.0.0 Release"),
@@ -60,8 +55,7 @@ def test_ci_output(capsys, create_git_commit, create_git_repository):
     git = create_git_repository(
         (
             "pyproject.toml",
-            BADABUMP_CONFIG_SEMVER_TOML
-            + PYPROJECT_TOML.format(version="1.0.0"),
+            BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0"),
             "feat: Initial commit",
         ),
         tag=("v1.0.0", "1.0.0 Release"),
@@ -147,9 +141,7 @@ def test_initial_release(
     assert (path / file_name).read_text() == content
 
 
-@pytest.mark.parametrize(
-    "changelog_content", ("", "# 1.1.0 (In Development)\n\n")
-)
+@pytest.mark.parametrize("changelog_content", ("", "# 1.1.0 (In Development)\n\n"))
 def test_minor_change(
     capsys,
     monkeypatch,
@@ -162,8 +154,7 @@ def test_minor_change(
     git = create_git_repository(
         (
             "pyproject.toml",
-            BADABUMP_CONFIG_SEMVER_TOML
-            + PYPROJECT_TOML.format(version="1.0.0"),
+            BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0"),
             "feat: Initial commit",
         ),
         tag=("v1.0.0", "1.0.0 Release"),
@@ -192,8 +183,7 @@ def test_no_commits(capsys, create_git_commit, create_git_repository):
     git = create_git_repository(
         (
             "pyproject.toml",
-            BADABUMP_CONFIG_SEMVER_TOML
-            + PYPROJECT_TOML.format(version="1.0.0"),
+            BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0"),
             "feat: Initial commit",
         ),
         tag=("v1.0.0", "1.0.0 Release"),
@@ -209,9 +199,7 @@ def test_no_commits(capsys, create_git_commit, create_git_repository):
 def test_no_commits_pre_release(capsys, monkeypatch, create_git_repository):
     monkeypatch.setattr("sys.stdin", io.StringIO("y"))
 
-    content = BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(
-        version="1.0.0rc0"
-    )
+    content = BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0rc0")
 
     git = create_git_repository(
         (
@@ -235,9 +223,7 @@ def test_no_commits_pre_release(capsys, monkeypatch, create_git_repository):
 def test_wrong_answer(capsys, monkeypatch, create_git_repository):
     monkeypatch.setattr("sys.stdin", io.StringIO("n"))
 
-    content = BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(
-        version="1.0.0rc0"
-    )
+    content = BADABUMP_CONFIG_SEMVER_TOML + PYPROJECT_TOML.format(version="1.0.0rc0")
 
     git = create_git_repository(
         (

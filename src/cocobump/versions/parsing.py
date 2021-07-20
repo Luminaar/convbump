@@ -12,9 +12,7 @@ def build_schema_regexp(schema: str, parts: DictStrStr) -> Pattern[str]:
     return re.compile(rf"^{schema}$")
 
 
-def parse_version(
-    schema: str, parts: DictStrStr, value: str
-) -> Optional[DictStrStr]:
+def parse_version(schema: str, parts: DictStrStr, value: str) -> Optional[DictStrStr]:
     maybe_matched = build_schema_regexp(schema, parts).match(value)
     if maybe_matched:
         return maybe_matched.groupdict()

@@ -1,7 +1,6 @@
 from . import __app__
 from .enums import FormatTypeEnum, ProjectTypeEnum, VersionTypeEnum
 
-
 CHANGELOG_UPPER = "CHANGELOG"
 CHANGELOG_LOWER = CHANGELOG_UPPER.lower()
 

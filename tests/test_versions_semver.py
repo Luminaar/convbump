@@ -1,8 +1,6 @@
 import pytest
-
 from badabump.configs import UpdateConfig
 from badabump.versions.semver import SemVer
-
 
 VERSIONS = (
     (SemVer(major=0, minor=0, patch=1), "0.0.1"),
@@ -75,7 +73,5 @@ def test_semver_parse_invalid(invalid_semver):
         ),
     ),
 )
-def test_semver_update(
-    semver: SemVer, update_config: UpdateConfig, expected: SemVer
-):
+def test_semver_update(semver: SemVer, update_config: UpdateConfig, expected: SemVer):
     assert semver.update(update_config) == expected

@@ -1,7 +1,6 @@
 import re
 
 import pytest
-
 from badabump.regexps import ensure_regexp_dots, to_regexp
 
 

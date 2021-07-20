@@ -1,15 +1,13 @@
 import datetime
 
 import pytest
-
 from badabump.changelog import (
-    ChangeLog,
     COMMIT_TYPE_FEATURE,
+    ChangeLog,
     ConventionalCommit,
     version_header,
 )
 from badabump.enums import ChangeLogTypeEnum, FormatTypeEnum
-
 
 CI_BREAKING_COMMIT = "ci!: Use badabump release bot for pushing tags"
 
@@ -223,9 +221,7 @@ def test_commit_ci_breaking():
         commit.format(FormatTypeEnum.markdown)
         == "**BREAKING CHANGE:** Use badabump release bot for pushing tags"
     )
-    assert commit.format(FormatTypeEnum.markdown) == commit.format(
-        FormatTypeEnum.rst
-    )
+    assert commit.format(FormatTypeEnum.markdown) == commit.format(FormatTypeEnum.rst)
 
 
 def test_commit_docs_scope():
@@ -239,17 +235,13 @@ def test_commit_docs_scope():
         commit.format(FormatTypeEnum.markdown)
         == "[#123] (**openapi**) Update descriptions in OpenAPI schema"
     )
-    assert commit.format(FormatTypeEnum.markdown) == commit.format(
-        FormatTypeEnum.rst
-    )
+    assert commit.format(FormatTypeEnum.markdown) == commit.format(FormatTypeEnum.rst)
 
 
 def test_commit_feature():
     commit = ConventionalCommit.from_git_commit(FEATURE_COMMIT)
     assert commit.commit_type == COMMIT_TYPE_FEATURE
-    assert (
-        commit.description == "Export necessary types from the package (#31)"
-    )
+    assert commit.description == "Export necessary types from the package (#31)"
     assert commit.is_breaking_change is False
     assert commit.issues == ("IFXND-55",)
     assert (
@@ -264,9 +256,7 @@ Issue: IFXND-55"""
         commit.format(FormatTypeEnum.markdown)
         == "[IFXND-55] Export necessary types from the package (#31)"
     )
-    assert commit.format(FormatTypeEnum.markdown) == commit.format(
-        FormatTypeEnum.rst
-    )
+    assert commit.format(FormatTypeEnum.markdown) == commit.format(FormatTypeEnum.rst)
 
 
 def test_commit_refactor():
@@ -336,9 +326,7 @@ def test_commit_refactor():
         ),
     ),
 )
-def test_version_header(
-    version, format_type, include_date, is_pre_release, expected
-):
+def test_version_header(version, format_type, include_date, is_pre_release, expected):
     assert version_header(
         version,
         format_type,

@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-
 from badabump.cli.commands import (
     find_changelog_path,
     guess_version_files,
@@ -32,9 +31,7 @@ def test_find_changelog_path(tmpdir, format_type, file_name):
     path = Path(tmpdir)
     (path / file_name).write_text("# 1.0.0 Release (YYYY-MM-DD)")
     assert (
-        find_changelog_path(
-            ProjectConfig(path=path, changelog_format_type_file=format_type)
-        )
+        find_changelog_path(ProjectConfig(path=path, changelog_format_type_file=format_type))
         == path / file_name
     )
 
@@ -49,18 +46,14 @@ def test_find_changelog_path(tmpdir, format_type, file_name):
 def test_find_changelog_path_no_file(tmpdir, format_type, expected):
     path = Path(tmpdir)
     assert (
-        find_changelog_path(
-            ProjectConfig(path=path, changelog_format_type_file=format_type)
-        )
+        find_changelog_path(ProjectConfig(path=path, changelog_format_type_file=format_type))
         == path / expected
     )
 
 
 def test_guess_javascript_version_files(tmpdir):
     assert guess_version_files(
-        ProjectConfig(
-            path=Path(tmpdir), project_type=ProjectTypeEnum.javascript
-        )
+        ProjectConfig(path=Path(tmpdir), project_type=ProjectTypeEnum.javascript)
     ) == ("package.json",)
 
 
@@ -106,11 +99,7 @@ version = "1.0.0"
         item_path.write_text("")
 
     assert (
-        guess_version_files(
-            ProjectConfig(
-                path=Path(tmpdir), project_type=ProjectTypeEnum.python
-            )
-        )
+        guess_version_files(ProjectConfig(path=Path(tmpdir), project_type=ProjectTypeEnum.python))
         == expected
     )
 
@@ -122,18 +111,14 @@ def test_guess_python_version_files_invalid_poetry_config(tmpdir):
 version = "1.0.0"
 """
     )
-    assert guess_version_files(
-        ProjectConfig(path=path, project_type=ProjectTypeEnum.python)
-    ) == ("pyproject.toml",)
+    assert guess_version_files(ProjectConfig(path=path, project_type=ProjectTypeEnum.python)) == (
+        "pyproject.toml",
+    )
 
 
 def test_guess_python_version_files_no_pyproject_toml(tmpdir):
     assert (
-        guess_version_files(
-            ProjectConfig(
-                path=Path(tmpdir), project_type=ProjectTypeEnum.python
-            )
-        )
+        guess_version_files(ProjectConfig(path=Path(tmpdir), project_type=ProjectTypeEnum.python))
         == ()
     )
 
@@ -173,9 +158,7 @@ def test_run_post_bump_hook_dry_run(capsys, tmpdir, file_name, expected):
 
 
 def test_update_file_does_not_exist(tmpdir):
-    assert (
-        update_file(Path(tmpdir) / "does-not-exist.txt", "one", "two") is False
-    )
+    assert update_file(Path(tmpdir) / "does-not-exist.txt", "one", "two") is False
 
 
 def test_update_version_files_no_current_version(tmpdir):
@@ -185,20 +168,14 @@ def test_update_version_files_no_current_version(tmpdir):
 
 
 def test_update_version_files_with_version_files(tmpdir):
-    config = ProjectConfig(
-        path=Path(tmpdir), version_files=("pyproject.toml",)
-    )
+    config = ProjectConfig(path=Path(tmpdir), version_files=("pyproject.toml",))
     current_version = Version.from_tag("v20.1.0", config=config)
     next_version = Version.from_tag("v20.1.1", config=config)
     assert update_version_files(config, current_version, next_version) is False
 
 
-@pytest.mark.parametrize(
-    "invalid_files", (("../pyproject.toml",), ("/tmp/pyproject.toml",))
-)
-def test_update_version_files_with_invalid_version_files(
-    tmpdir, invalid_files
-):
+@pytest.mark.parametrize("invalid_files", (("../pyproject.toml",), ("/tmp/pyproject.toml",)))
+def test_update_version_files_with_invalid_version_files(tmpdir, invalid_files):
     config = ProjectConfig(path=Path(tmpdir), version_files=invalid_files)
 
     current_version = Version.from_tag("v20.1.0", config=config)

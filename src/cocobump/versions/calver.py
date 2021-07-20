@@ -10,7 +10,6 @@ from .exceptions import VersionError, VersionParseError
 from .formatting import format_version
 from .parsing import parse_version
 
-
 DEFAULT_MINOR = 1
 DEFAULT_MICRO = 0
 
@@ -56,9 +55,7 @@ class CalVer:
     schema: str = DEFAULT_VERSION_SCHEMA
 
     def format(self) -> str:  # noqa: A003
-        return format_version(
-            self.schema, SCHEMA_PARTS_FORMATTING, self.get_format_context()
-        )
+        return format_version(self.schema, SCHEMA_PARTS_FORMATTING, self.get_format_context())
 
     @classmethod
     def from_parsed_dict(cls, parsed: DictStrStr, *, schema: str) -> "CalVer":
@@ -145,14 +142,10 @@ class CalVer:
             if self.day != next_day:
                 next_minor, next_micro = DEFAULT_MINOR, DEFAULT_MICRO
 
-        if (
-            next_minor is None and next_micro is None
-        ) and not config.is_pre_release:
+        if (next_minor is None and next_micro is None) and not config.is_pre_release:
             next_minor, next_micro = self.minor, self.micro
 
-            if next_minor is not None and (
-                config.is_breaking_change or config.is_minor_change
-            ):
+            if next_minor is not None and (config.is_breaking_change or config.is_minor_change):
                 next_minor += 1
                 next_micro = 0 if next_micro is not None else None
 
@@ -174,9 +167,7 @@ def get_week(value: datetime.datetime) -> int:
     return value.isocalendar()[1]
 
 
-def guess_year(
-    year: Optional[str], short_year: Optional[str]
-) -> Optional[int]:
+def guess_year(year: Optional[str], short_year: Optional[str]) -> Optional[int]:
     if year is not None:
         return int(year)
     if short_year is not None:

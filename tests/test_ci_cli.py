@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from badabump.cli.ci_app import main
 
 
@@ -30,10 +29,7 @@ def test_empty_subcommand(capsys):
     assert main([]) == 1
 
     captured = capsys.readouterr()
-    assert (
-        "ERROR: Please provide one of available subcommands. Exit..."
-        in captured.err
-    )
+    assert "ERROR: Please provide one of available subcommands. Exit..." in captured.err
     assert captured.out == ""
 
 
@@ -56,8 +52,7 @@ def test_prepare_release(capsys, prepare_repository_for_release, ref):
     assert "::set-output name=is_pre_release::false" in captured.out
     assert "::set-output name=release_name::20.1.0 Release" in captured.out
     assert (
-        "::set-output name=release_body::Features:%0A---------"
-        "%0A%0A- Initial release"
+        "::set-output name=release_body::Features:%0A---------" "%0A%0A- Initial release"
     ) in captured.out
 
 
@@ -100,9 +95,7 @@ Co-authored-by: playpauseandstop <playpauseandstop@users.noreply.github.com>
 
 
 def test_prepare_tag_empty_body(capsys, create_git_repository):
-    git = create_git_repository(
-        ("README.md", "# Project", "feat: Initial commit")
-    )
+    git = create_git_repository(("README.md", "# Project", "feat: Initial commit"))
     assert main(["-C", str(git.path), "prepare_tag"]) == 1
 
     captured = capsys.readouterr()
@@ -126,8 +119,5 @@ Issue: #1
     assert main(["-C", str(git.path), "prepare_tag"]) == 1
 
     captured = capsys.readouterr()
-    assert (
-        "ERROR: Last commit has unexpected subject line. Exit..."
-        in captured.err
-    )
+    assert "ERROR: Last commit has unexpected subject line. Exit..." in captured.err
     assert captured.out == ""

@@ -18,13 +18,9 @@ from .output import github_actions_output
 def parse_args(argv: Argv) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog=f"{__app__}-ci",
-        description=(
-            "Useful commands for dealing with release commits & tags at CI"
-        ),
+        description=("Useful commands for dealing with release commits & tags at CI"),
     )
-    parser.add_argument(
-        "-v", "--version", action="version", version=__version__
-    )
+    parser.add_argument("-v", "--version", action="version", version=__version__)
     add_path_argument(parser)
 
     subparsers = parser.add_subparsers()
@@ -51,9 +47,7 @@ def prepare_release(args: argparse.Namespace, *, config: ProjectConfig) -> int:
     tag_ref = clean_tag_ref(args.ref)
     version = Version.from_tag(tag_ref, config=config)
     github_actions_output("tag_name", tag_ref)
-    github_actions_output(
-        "is_pre_release", json.dumps(version.pre_release is not None)
-    )
+    github_actions_output("is_pre_release", json.dumps(version.pre_release is not None))
 
     tag_subject = git.retrieve_tag_subject(tag_ref)
     github_actions_output("release_name", tag_subject)
@@ -83,9 +77,7 @@ def prepare_tag(args: argparse.Namespace, *, config: ProjectConfig) -> int:
         return 1
 
     version = matched.groupdict()["version"]
-    github_actions_output(
-        "tag_name", config.tag_format.format(version=version)
-    )
+    github_actions_output("tag_name", config.tag_format.format(version=version))
     github_actions_output(
         "tag_message",
         "\n\n".join(
