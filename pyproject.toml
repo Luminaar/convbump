@@ -27,6 +27,7 @@ classifiers = [
 python = "^3.7"
 attrs = ">=20.2.0,<22"
 toml = "^0.10.1"
+click = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"
@@ -38,7 +39,8 @@ black = "21.6b0"
 isort = "^5.9.1"
 
 [tool.poetry.scripts]
-cocobump = "cocobump.cli.app:main"
+cocobump = "cocobump.cli.simple:version"
+cocobump-changelog = "cocobump.cli.simple:changelog"
 cocobump-ci = "cocobump.cli.ci_app:main"
 
 [tool.poe.tasks]
