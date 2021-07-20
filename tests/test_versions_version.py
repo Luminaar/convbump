@@ -19,6 +19,7 @@ from cocobump.versions.version import (
 )
 
 SEMVER_PROJECT_CONFIG = ProjectConfig(version_type=VersionTypeEnum.semver)
+CALVER_PROJECT_CONFIG = ProjectConfig(version_type=VersionTypeEnum.calver)
 
 
 @pytest.mark.parametrize("version", ("1.0.0", "1.0.0-alpha.2", "1.0.0-rc.0"))
@@ -113,12 +114,12 @@ def test_parse_version_parse_error():
     (
         (
             "v20.1.0",
-            ProjectConfig(),
+            ProjectConfig(version_type=VersionTypeEnum.calver),
             Version(version=CalVer(year=2020, minor=1, micro=0)),
         ),
         (
             "v20.1.0b2",
-            ProjectConfig(),
+            ProjectConfig(version_type=VersionTypeEnum.calver),
             Version(
                 version=CalVer(year=2020, minor=1, micro=0),
                 pre_release=PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=2),
@@ -126,7 +127,11 @@ def test_parse_version_parse_error():
         ),
         (
             "release/20.10.20",
-            ProjectConfig(tag_format="release/{version}", version_schema="YY.MM.DD"),
+            ProjectConfig(
+                tag_format="release/{version}",
+                version_schema="YY.MM.DD",
+                version_type=VersionTypeEnum.calver,
+            ),
             Version(version=CalVer(year=2020, month=10, day=20, schema="YY.MM.DD")),
         ),
         (
@@ -221,9 +226,9 @@ def test_version_update_calver(current_suffix, update_config, expected_suffix):
     current = f"{short_year}.{current_suffix}"
     expected = f"{short_year}.{expected_suffix}"
 
-    current_version = Version.parse(current, config=ProjectConfig())
+    current_version = Version.parse(current, config=CALVER_PROJECT_CONFIG)
     next_version = current_version.update(update_config)
-    assert next_version.format(config=SEMVER_PROJECT_CONFIG) == expected
+    assert next_version.format(config=CALVER_PROJECT_CONFIG) == expected
 
 
 @pytest.mark.parametrize(
