@@ -36,11 +36,7 @@ PRE_RELEASES: Tuple[Tuple[PreRelease, ProjectTypeEnum, str], ...] = (
         ProjectTypeEnum.javascript,
         "-beta.42",
     ),
-    (
-        PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=2),
-        ProjectTypeEnum.python,
-        "rc2",
-    ),
+    (PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=2), ProjectTypeEnum.python, "rc2",),
     (
         PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=15),
         ProjectTypeEnum.python,
@@ -82,36 +78,20 @@ def test_pre_release_parse_value_error(project_type: ProjectTypeEnum, invalid_va
     "current, update_config, expected",
     (
         # Alpha
+        (PreRelease(), UpdateConfig(is_pre_release=True), PreRelease(number=1),),
         (
             PreRelease(),
-            UpdateConfig(is_pre_release=True),
+            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(number=1),
         ),
         (
             PreRelease(),
-            UpdateConfig(
-                is_minor_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
-            PreRelease(number=1),
-        ),
-        (
-            PreRelease(),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta),
         ),
         (
             PreRelease(number=1),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta),
         ),
         # Beta
@@ -122,38 +102,22 @@ def test_pre_release_parse_value_error(project_type: ProjectTypeEnum, invalid_va
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc),
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta),
-            UpdateConfig(
-                is_minor_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=1),
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=1),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc),
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=1),
-            UpdateConfig(
-                is_minor_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.beta, number=2),
         ),
         # RC
@@ -164,29 +128,17 @@ def test_pre_release_parse_value_error(project_type: ProjectTypeEnum, invalid_va
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc),
-            UpdateConfig(
-                is_minor_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=1),
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=1),
         ),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=1),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc, number=2),
         ),
     ),
@@ -200,21 +152,12 @@ def test_pre_release_update(
 @pytest.mark.parametrize(
     "current, update_config",
     (
-        (
-            PreRelease(),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-            ),
-        ),
+        (PreRelease(), UpdateConfig(is_breaking_change=True, is_micro_change=False,),),
         (
             PreRelease(pre_release_type=PreReleaseTypeEnum.rc),
             UpdateConfig(is_minor_change=True, is_micro_change=False),
         ),
-        (
-            PreRelease(pre_release_type=PreReleaseTypeEnum.beta),
-            UpdateConfig(),
-        ),
+        (PreRelease(pre_release_type=PreReleaseTypeEnum.beta), UpdateConfig(),),
     ),
 )
 def test_pre_release_update_not_pre_release(current: PreRelease, update_config: UpdateConfig):

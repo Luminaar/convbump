@@ -22,10 +22,7 @@ def ensure_dir(path: Path) -> Path:
 
 @pytest.mark.parametrize(
     "format_type, file_name",
-    (
-        (FormatTypeEnum.markdown, "CHANGELOG.md"),
-        (FormatTypeEnum.rst, "CHANGELOG.rst"),
-    ),
+    ((FormatTypeEnum.markdown, "CHANGELOG.md"), (FormatTypeEnum.rst, "CHANGELOG.rst"),),
 )
 def test_find_changelog_path(tmpdir, format_type, file_name):
     path = Path(tmpdir)
@@ -38,10 +35,7 @@ def test_find_changelog_path(tmpdir, format_type, file_name):
 
 @pytest.mark.parametrize(
     "format_type, expected",
-    (
-        (FormatTypeEnum.markdown, "CHANGELOG.md"),
-        (FormatTypeEnum.rst, "CHANGELOG.rst"),
-    ),
+    ((FormatTypeEnum.markdown, "CHANGELOG.md"), (FormatTypeEnum.rst, "CHANGELOG.rst"),),
 )
 def test_find_changelog_path_no_file(tmpdir, format_type, expected):
     path = Path(tmpdir)
@@ -61,25 +55,14 @@ def test_guess_javascript_version_files(tmpdir):
     "files, expected",
     (
         ((), ("pyproject.toml",)),
-        (
-            ("project.py",),
-            ("pyproject.toml", "./project.py"),
-        ),
+        (("project.py",), ("pyproject.toml", "./project.py"),),
         (
             ("project/__init__.py", "project/__version__.py"),
-            (
-                "pyproject.toml",
-                "./project/__init__.py",
-                "./project/__version__.py",
-            ),
+            ("pyproject.toml", "./project/__init__.py", "./project/__version__.py",),
         ),
         (
             ("src/project/__init__.py", "src/project/__version__.py"),
-            (
-                "pyproject.toml",
-                "./src/project/__init__.py",
-                "./src/project/__version__.py",
-            ),
+            ("pyproject.toml", "./src/project/__init__.py", "./src/project/__version__.py",),
         ),
     ),
 )
@@ -124,8 +107,7 @@ def test_guess_python_version_files_no_pyproject_toml(tmpdir):
 
 
 @pytest.mark.parametrize(
-    "file_name, expected",
-    (("package-lock.json", "npm install"), ("yarn.lock", "yarn install")),
+    "file_name, expected", (("package-lock.json", "npm install"), ("yarn.lock", "yarn install")),
 )
 def test_run_post_bump_hook(capsys, monkeypatch, tmpdir, file_name, expected):
     monkeypatch.setattr("subprocess.check_call", Mock())
@@ -134,22 +116,19 @@ def test_run_post_bump_hook(capsys, monkeypatch, tmpdir, file_name, expected):
     (path / file_name).write_text("")
 
     run_post_bump_hook(
-        ProjectConfig(path=path, project_type=ProjectTypeEnum.javascript),
-        is_dry_run=False,
+        ProjectConfig(path=path, project_type=ProjectTypeEnum.javascript), is_dry_run=False,
     )
 
 
 @pytest.mark.parametrize(
-    "file_name, expected",
-    (("package-lock.json", "npm install"), ("yarn.lock", "yarn install")),
+    "file_name, expected", (("package-lock.json", "npm install"), ("yarn.lock", "yarn install")),
 )
 def test_run_post_bump_hook_dry_run(capsys, tmpdir, file_name, expected):
     path = Path(tmpdir)
     (path / file_name).write_text("")
 
     run_post_bump_hook(
-        ProjectConfig(path=path, project_type=ProjectTypeEnum.javascript),
-        is_dry_run=True,
+        ProjectConfig(path=path, project_type=ProjectTypeEnum.javascript), is_dry_run=True,
     )
 
     captured = capsys.readouterr()

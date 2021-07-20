@@ -113,21 +113,9 @@ UTCNOW = datetime.datetime.utcnow()
 @pytest.mark.parametrize(
     "changelog_type, format_type, expected",
     (
-        (
-            ChangeLogTypeEnum.changelog_file,
-            FormatTypeEnum.markdown,
-            CHANGELOG_EMPTY,
-        ),
-        (
-            ChangeLogTypeEnum.changelog_file,
-            FormatTypeEnum.rst,
-            CHANGELOG_EMPTY,
-        ),
-        (
-            ChangeLogTypeEnum.git_commit,
-            FormatTypeEnum.markdown,
-            CHANGELOG_EMPTY,
-        ),
+        (ChangeLogTypeEnum.changelog_file, FormatTypeEnum.markdown, CHANGELOG_EMPTY,),
+        (ChangeLogTypeEnum.changelog_file, FormatTypeEnum.rst, CHANGELOG_EMPTY,),
+        (ChangeLogTypeEnum.git_commit, FormatTypeEnum.markdown, CHANGELOG_EMPTY,),
         (ChangeLogTypeEnum.git_commit, FormatTypeEnum.rst, CHANGELOG_EMPTY),
     ),
 )
@@ -148,18 +136,10 @@ def test_changelog_empty(changelog_type, format_type, expected):
 )
 def test_changelog_format_file(format_type, is_pre_release, expected):
     changelog = ChangeLog.from_git_commits(
-        [
-            FEATURE_COMMIT,
-            FIX_COMMIT,
-            CI_BREAKING_COMMIT,
-            DOCS_SCOPE_COMMIT,
-            REFACTOR_COMMIT,
-        ]
+        [FEATURE_COMMIT, FIX_COMMIT, CI_BREAKING_COMMIT, DOCS_SCOPE_COMMIT, REFACTOR_COMMIT,]
     )
     content = changelog.format(
-        ChangeLogTypeEnum.changelog_file,
-        format_type,
-        is_pre_release=is_pre_release,
+        ChangeLogTypeEnum.changelog_file, format_type, is_pre_release=is_pre_release,
     )
     assert content == expected
 
@@ -175,18 +155,10 @@ def test_changelog_format_file(format_type, is_pre_release, expected):
 )
 def test_changelog_format_git(format_type, is_pre_release, expected):
     changelog = ChangeLog.from_git_commits(
-        [
-            FEATURE_COMMIT,
-            FIX_COMMIT,
-            CI_BREAKING_COMMIT,
-            DOCS_SCOPE_COMMIT,
-            REFACTOR_COMMIT,
-        ]
+        [FEATURE_COMMIT, FIX_COMMIT, CI_BREAKING_COMMIT, DOCS_SCOPE_COMMIT, REFACTOR_COMMIT,]
     )
     content = changelog.format(
-        ChangeLogTypeEnum.git_commit,
-        format_type,
-        is_pre_release=is_pre_release,
+        ChangeLogTypeEnum.git_commit, format_type, is_pre_release=is_pre_release,
     )
     assert content == expected
 
@@ -268,13 +240,7 @@ def test_commit_refactor():
 @pytest.mark.parametrize(
     "version, format_type, include_date, is_pre_release, expected",
     (
-        (
-            "1.0.0",
-            FormatTypeEnum.markdown,
-            True,
-            False,
-            f"# 1.0.0 ({UTCNOW.date().isoformat()})",
-        ),
+        ("1.0.0", FormatTypeEnum.markdown, True, False, f"# 1.0.0 ({UTCNOW.date().isoformat()})",),
         (
             "1.0.0rc0",
             FormatTypeEnum.markdown,
@@ -282,20 +248,8 @@ def test_commit_refactor():
             True,
             f"## 1.0.0rc0 ({UTCNOW.date().isoformat()})",
         ),
-        (
-            "1.0.0",
-            FormatTypeEnum.markdown,
-            False,
-            False,
-            "# 1.0.0",
-        ),
-        (
-            "1.0.0rc0",
-            FormatTypeEnum.markdown,
-            False,
-            True,
-            "## 1.0.0rc0",
-        ),
+        ("1.0.0", FormatTypeEnum.markdown, False, False, "# 1.0.0",),
+        ("1.0.0rc0", FormatTypeEnum.markdown, False, True, "## 1.0.0rc0",),
         (
             "1.0.0",
             FormatTypeEnum.rst,
@@ -310,26 +264,11 @@ def test_commit_refactor():
             True,
             f"1.0.0rc0 ({UTCNOW.date().isoformat()})\n-----------------",
         ),
-        (
-            "1.0.0",
-            FormatTypeEnum.rst,
-            False,
-            False,
-            "1.0.0\n======",
-        ),
-        (
-            "1.0.0rc0",
-            FormatTypeEnum.rst,
-            False,
-            True,
-            "1.0.0rc0\n--------",
-        ),
+        ("1.0.0", FormatTypeEnum.rst, False, False, "1.0.0\n======",),
+        ("1.0.0rc0", FormatTypeEnum.rst, False, True, "1.0.0rc0\n--------",),
     ),
 )
 def test_version_header(version, format_type, include_date, is_pre_release, expected):
     assert version_header(
-        version,
-        format_type,
-        include_date=include_date,
-        is_pre_release=is_pre_release,
+        version, format_type, include_date=include_date, is_pre_release=is_pre_release,
     )

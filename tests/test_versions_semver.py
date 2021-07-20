@@ -33,11 +33,7 @@ def test_semver_parse_invalid(invalid_semver):
 @pytest.mark.parametrize(
     "semver, update_config, expected",
     (
-        (
-            SemVer(major=1, minor=0, patch=0),
-            UpdateConfig(),
-            SemVer(major=1, minor=0, patch=1),
-        ),
+        (SemVer(major=1, minor=0, patch=0), UpdateConfig(), SemVer(major=1, minor=0, patch=1),),
         (
             SemVer(major=1, minor=0, patch=0),
             UpdateConfig(is_minor_change=True, is_micro_change=False),
@@ -55,20 +51,12 @@ def test_semver_parse_invalid(invalid_semver):
         ),
         (
             SemVer(major=1, minor=0, patch=0),
-            UpdateConfig(
-                is_minor_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_minor_change=True, is_micro_change=False, is_pre_release=True,),
             SemVer(major=1, minor=0, patch=0),
         ),
         (
             SemVer(major=1, minor=0, patch=0),
-            UpdateConfig(
-                is_breaking_change=True,
-                is_micro_change=False,
-                is_pre_release=True,
-            ),
+            UpdateConfig(is_breaking_change=True, is_micro_change=False, is_pre_release=True,),
             SemVer(major=1, minor=0, patch=0),
         ),
     ),

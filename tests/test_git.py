@@ -43,10 +43,7 @@ def test_list_commits_empty(create_git_repository):
 
 
 def test_retrieve_last_commit(create_git_repository):
-    git = create_git_repository(
-        ("1.txt", None, COMMITS[0]),
-        ("2.txt", None, COMMITS[1]),
-    )
+    git = create_git_repository(("1.txt", None, COMMITS[0]), ("2.txt", None, COMMITS[1]),)
     assert git.retrieve_last_commit() == COMMITS[1]
 
 
