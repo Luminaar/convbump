@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 attrs = ">=20.2.0,<22"
 toml = "^0.10.1"
 
@@ -33,14 +33,24 @@ coverage = "^5.5"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 time-machine = "^2.1.0"
+poethepoet = "^0.10.0"
+black = "21.6b0"
+isort = "^5.9.1"
 
 [tool.poetry.scripts]
-badabump = "badabump.cli.app:main"
-badabump-ci = "badabump.cli.ci_app:main"
+cocobump = "cocobump.cli.app:main"
+cocobump-ci = "cocobump.cli.ci_app:main"
+
+[tool.poe.tasks]
+_black = "black ."
+_isort = "isort ."
+format-code = ["_isort", "_black"]
+
+[tool.isort]
+profile = "black"
 
 [tool.black]
-line_length = 79
-target_version = ["py36"]
+line-length = 99
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
