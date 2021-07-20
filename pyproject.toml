@@ -39,9 +39,8 @@ black = "21.6b0"
 isort = "^5.9.1"
 
 [tool.poetry.scripts]
-cocobump = "cocobump.cli.simple:version"
-cocobump-changelog = "cocobump.cli.simple:changelog"
-cocobump-ci = "cocobump.cli.ci_app:main"
+cocobump = "cocobump.app:version"
+cocobump-changelog = "cocobump.app:changelog"
 
 [tool.poe.tasks]
 _black = "black ."
