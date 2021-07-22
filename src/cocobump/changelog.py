@@ -9,7 +9,7 @@ from .enums import ChangeLogTypeEnum, FormatTypeEnum
 BREAKING_CHANGE_IN_BODY = "BREAKING CHANGE:"
 BREAKING_CHANGE_IN_COMMIT_TYPE = "!"
 
-CHANGELOG_EMPTY = "No changes since last pre-release"
+CHANGELOG_EMPTY = ""
 
 COMMIT_TYPE_FEATURE = "feat"
 COMMIT_TYPE_FIX = "fix"

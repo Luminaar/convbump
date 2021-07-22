@@ -4,13 +4,12 @@ from typing import Optional, Tuple
 
 import click
 
-from ..changelog import ChangeLog
-from ..configs import ProjectConfig, UpdateConfig
-from ..constants import INITIAL_RELEASE_COMMIT
-from ..enums import ChangeLogTypeEnum
-from ..git import Git
-from ..versions import Version
-from .output import EMPTY
+from .changelog import ChangeLog
+from .configs import ProjectConfig, UpdateConfig
+from .constants import INITIAL_RELEASE_COMMIT
+from .enums import ChangeLogTypeEnum
+from .git import Git
+from .versions import Version
 
 
 def echo(*values) -> None:
@@ -47,19 +46,21 @@ def run(project_config: ProjectConfig, git: Git, strict: bool) -> Tuple[Version,
 
     echo(
         "Current version:",
-        current_version.format(config=project_config) if current_version else EMPTY,
+        current_version.format(config=project_config) if current_version else "-",
     )
 
     if current_tag is not None and current_version is not None:
         git_commits = git.list_commits(current_tag)
-        if not git_commits:
-            raise RuntimeError("No commits found after latest tag")
-
         changelog = ChangeLog.from_git_commits(git_commits, skip_failed=not strict)
+        if not git_commits or len(changelog.commits) == 0:
+            raise ValueError("No commits found after latest tag")
+
         update_config = create_update_config(changelog)
         next_version = current_version.update(update_config)
     else:
-        raise RuntimeError("No version tag found")
+        git_commits = git.list_commits(None)
+        next_version = Version.from_tag("v1.0.0", config=project_config)
+        changelog = ChangeLog.from_git_commits(git_commits, skip_failed=not strict)
 
     return next_version, changelog
 
