@@ -15,7 +15,7 @@ def create_git_commit():
     def factory(path: Path, commit: CommitTuple) -> None:
         file_path, content, message = commit
 
-        (path / file_path).write_text(content)
+        (path / file_path).write_text(content or "")
 
         subprocess.check_call(["git", "add", "."], cwd=path)
         subprocess.check_call(["git", "commit", "-m", message], cwd=path)

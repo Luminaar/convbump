@@ -34,7 +34,7 @@ REFACTOR_COMMIT = """refactor: Change algorigthm to use
 Fixes: DEV-1010
 """
 
-CHANGELOG_EMPTY = "No changes since last pre-release"
+CHANGELOG_EMPTY = ""
 
 CHANGELOG_FILE_MD = """## Features:
 
