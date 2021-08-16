@@ -8,6 +8,11 @@ FEATURE_COMMIT = ("feature.txt", "feature", "feat: first feature")
 BREAKING_COMMIT = ("breaking.txt", "breaking feature", "feat!: breaking change")
 FIX_COMMIT = ("fix.txt", "fix", "fix: first fix")
 NON_CONVENTIONAL_COMMIT = ("fix.txt", "non-conventional fix", "non conventional commit")
+WITH_FOOTERS = (
+    "feature.txt",
+    "feature",
+    "feat: first feature\n\nfix: including this fix\nfix: also this fix",
+)
 
 INITIAL_TAG = ("v1.0.0", "Initial release")
 
@@ -110,4 +115,13 @@ def test_breaking_commit(initial_repository, create_git_commit, project_config):
 
     next_version, changelog = run(project_config, initial_repository, False)
     assert next_version.format(config=project_config) == "2.0.0"
+    assert len(changelog.commits) == 1
+
+
+def test_commit_with_footer(initial_repository, create_git_commit, project_config):
+
+    create_git_commit(initial_repository.path, WITH_FOOTERS)
+
+    next_version, changelog = run(project_config, initial_repository, False)
+    assert next_version.format(config=project_config) == "1.1.0"
     assert len(changelog.commits) == 1
