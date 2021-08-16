@@ -1,7 +1,7 @@
 import pytest
 
-from cocobump.configs import UpdateConfig
-from cocobump.versions.semver import SemVer
+from convbump.configs import UpdateConfig
+from convbump.versions.semver import SemVer
 
 VERSIONS = (
     (SemVer(major=0, minor=0, patch=1), "0.0.1"),

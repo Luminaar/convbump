@@ -1,8 +1,8 @@
 import pytest
 
-from cocobump.configs import ProjectConfig, UpdateConfig
-from cocobump.constants import DEFAULT_SEMVER_SCHEMA
-from cocobump.enums import VersionTypeEnum
+from convbump.configs import ProjectConfig, UpdateConfig
+from convbump.constants import DEFAULT_SEMVER_SCHEMA
+from convbump.enums import VersionTypeEnum
 
 DEFAULT_KWARGS = {
     "is_breaking_change": False,

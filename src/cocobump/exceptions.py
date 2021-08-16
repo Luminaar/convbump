@@ -1,6 +1,6 @@
 class Error(Exception):
-    """Base badabump error."""
+    """Base error."""
 
 
 class ConfigError(Error):
-    """Something wrong with badabump configuration."""
+    """Something wrong with configuration."""

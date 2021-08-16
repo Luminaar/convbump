@@ -1,7 +1,7 @@
 import pytest
 
-from cocobump.app import run
-from cocobump.configs import ProjectConfig
+from convbump.app import run
+from convbump.configs import ProjectConfig
 
 INITIAL_COMMIT = ("initial.txt", "initial commit", "Initial commit")
 FEATURE_COMMIT = ("feature.txt", "feature", "feat: first feature")

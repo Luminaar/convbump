@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from cocobump.regexps import ensure_regexp_dots, to_regexp
+from convbump.regexps import ensure_regexp_dots, to_regexp
 
 
 @pytest.mark.parametrize(

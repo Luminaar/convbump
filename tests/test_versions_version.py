@@ -6,13 +6,13 @@ import attr
 import pytest
 import toml
 
-from cocobump.configs import ProjectConfig, UpdateConfig
-from cocobump.enums import ProjectTypeEnum, VersionTypeEnum
-from cocobump.versions.calver import SHORT_YEAR_START, CalVer
-from cocobump.versions.exceptions import VersionParseError
-from cocobump.versions.pre_release import PreRelease, PreReleaseTypeEnum
-from cocobump.versions.semver import SemVer
-from cocobump.versions.version import (
+from convbump.configs import ProjectConfig, UpdateConfig
+from convbump.enums import ProjectTypeEnum, VersionTypeEnum
+from convbump.versions.calver import SHORT_YEAR_START, CalVer
+from convbump.versions.exceptions import VersionParseError
+from convbump.versions.pre_release import PreRelease, PreReleaseTypeEnum
+from convbump.versions.semver import SemVer
+from convbump.versions.version import (
     Version,
     find_project_version,
     guess_version_from_tag,

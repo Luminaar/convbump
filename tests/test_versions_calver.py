@@ -3,8 +3,8 @@ import datetime
 import pytest
 import time_machine
 
-from cocobump.configs import UpdateConfig
-from cocobump.versions.calver import SHORT_YEAR_START, CalVer
+from convbump.configs import UpdateConfig
+from convbump.versions.calver import SHORT_YEAR_START, CalVer
 
 UTCNOW = datetime.datetime.utcnow()
 

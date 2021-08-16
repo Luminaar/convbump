@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "cocobump"
+name = "convbump"
 version = "0.1.0"
 description = "Manage changelog and bump project version number using conventional commits from latest git tag."
 authors = ["Max Kovykov <kovykmax@gmail.com>", "Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
 readme = "README.md"
-repository = "https://github.com/Luminaar/cocobump"
+repository = "https://github.com/Luminaar/convbump"
 packages = [
-  {include = "cocobump", from = "src"},
+  {include = "convbump", from = "src"},
 ]
 keywords = ["changelog", "conventional commit", "bump", "version", "calver", "semver", "pre release"]
 classifiers = [
@@ -39,8 +39,8 @@ black = "21.6b0"
 isort = "^5.9.1"
 
 [tool.poetry.scripts]
-cocobump = "cocobump.app:version"
-cocobump-changelog = "cocobump.app:changelog"
+convbump-version = "convbump.app:version"
+convbump-changelog = "convbump.app:changelog"
 
 [tool.poe.tasks]
 _black = "black ."

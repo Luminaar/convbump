@@ -2,13 +2,13 @@ import datetime
 
 import pytest
 
-from cocobump.changelog import (
+from convbump.changelog import (
     COMMIT_TYPE_FEATURE,
     ChangeLog,
     ConventionalCommit,
     version_header,
 )
-from cocobump.enums import ChangeLogTypeEnum, FormatTypeEnum
+from convbump.enums import ChangeLogTypeEnum, FormatTypeEnum
 
 CI_BREAKING_COMMIT = "ci!: Use badabump release bot for pushing tags"
 

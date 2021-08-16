@@ -2,9 +2,9 @@ from typing import Tuple
 
 import pytest
 
-from cocobump.configs import UpdateConfig
-from cocobump.enums import ProjectTypeEnum
-from cocobump.versions.pre_release import PreRelease, PreReleaseTypeEnum
+from convbump.configs import UpdateConfig
+from convbump.enums import ProjectTypeEnum
+from convbump.versions.pre_release import PreRelease, PreReleaseTypeEnum
 
 PRE_RELEASES: Tuple[Tuple[PreRelease, ProjectTypeEnum, str], ...] = (
     (
