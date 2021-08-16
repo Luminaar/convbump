@@ -11,10 +11,9 @@ packages = [
 ]
 keywords = ["changelog", "conventional commit", "bump", "version", "calver", "semver", "pre release"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
   "Intended Audience :: Developers",
   "Intended Audience :: System Administrators",
-  "Environment :: Console",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
