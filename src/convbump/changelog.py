@@ -9,7 +9,7 @@ from .enums import ChangeLogTypeEnum, FormatTypeEnum
 BREAKING_CHANGE_IN_BODY = "BREAKING CHANGE:"
 BREAKING_CHANGE_IN_COMMIT_TYPE = "!"
 
-CHANGELOG_EMPTY = "No changes since last pre-release"
+CHANGELOG_EMPTY = ""
 
 COMMIT_TYPE_FEATURE = "feat"
 COMMIT_TYPE_FIX = "fix"
@@ -60,7 +60,7 @@ class ConventionalCommit:
         return f"{prefix}{self.description}"
 
     @classmethod
-    def from_git_commit(cls, git_commit: str) -> "ConventionalCommit":
+    def from_git_commit(cls, git_commit: str, skip_failed: bool = False) -> "ConventionalCommit":
         subject, *body = git_commit.splitlines()
 
         maybe_matched = COMMIT_TYPE_SUBJECT_RE.match(subject)
@@ -71,8 +71,10 @@ class ConventionalCommit:
                 description=matched_dict["description"],
                 body="\n".join(body[1:]) if body else None,
             )
-
-        raise ValueError("Unable to parse git commit as conventional commit")
+        if skip_failed:
+            return None
+        else:
+            raise ValueError("Unable to parse git commit as conventional commit")
 
     @property
     def is_breaking_change(self) -> bool:
@@ -171,12 +173,14 @@ class ChangeLog:
         return "\n\n".join(item for item in (features, fixes, refactor, others) if item)
 
     @classmethod
-    def from_git_commits(cls, git_commits: Tuple[str, ...]) -> "ChangeLog":
-        return cls(
-            commits=tuple(
-                ConventionalCommit.from_git_commit(item) for item in reversed(git_commits)
-            )
+    def from_git_commits(
+        cls, git_commits: Tuple[str, ...], skip_failed: bool = False
+    ) -> "ChangeLog":
+        commits = (
+            ConventionalCommit.from_git_commit(item, skip_failed) for item in reversed(git_commits)
         )
+
+        return cls(commits=tuple(filter(bool, commits)))
 
     @property
     def has_breaking_change(self) -> bool:

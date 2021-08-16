@@ -10,14 +10,20 @@ import attr
 class Git:
     path: Path
 
-    def list_commits(self, from_ref: str) -> Tuple[str, ...]:
+    def list_commits(self, from_ref: Optional[str]) -> Tuple[str, ...]:
         def iter_commtis(commit_ids: List[str]) -> Iterator[str]:
             for commit_id in commit_ids:
                 yield self._check_output(["git", "log", "-1", "--format=%B", commit_id])
 
-        commit_ids = self._check_output(
-            ["git", "log", "--format=%H", f"{from_ref}..HEAD"]
-        ).splitlines()
+        if from_ref is None:
+            command = ["git", "log", "--format=%H"]
+        else:
+            command = ["git", "log", "--format=%H", f"{from_ref}..HEAD"]
+        try:
+            commit_ids = self._check_output(command).splitlines()
+        except subprocess.CalledProcessError:
+            return ()
+
         return tuple(iter_commtis(commit_ids))
 
     def retrieve_last_commit(self) -> str:

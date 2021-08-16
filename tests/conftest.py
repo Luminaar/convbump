@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import pytest
 
-from cocobump.git import Git
+from convbump.git import Git
 
 CommitTuple = Tuple[str, Optional[str], str]
 TagTuple = Tuple[str, str]
@@ -12,9 +12,13 @@ TagTuple = Tuple[str, str]
 
 @pytest.fixture()
 def create_git_commit():
-    def factory(path: Path, commit: str) -> None:
+    def factory(path: Path, commit: CommitTuple) -> None:
+        file_path, content, message = commit
+
+        (path / file_path).write_text(content or "")
+
         subprocess.check_call(["git", "add", "."], cwd=path)
-        subprocess.check_call(["git", "commit", "-m", commit], cwd=path)
+        subprocess.check_call(["git", "commit", "-m", message], cwd=path)
 
     return factory
 
@@ -26,8 +30,7 @@ def create_git_repository(tmpdir, create_git_commit, create_git_tag):
 
         subprocess.check_call(["git", "init"], cwd=path)
 
-        for file_name, content, commit in commits:
-            (path / file_name).write_text(content or "")
+        for commit in commits:
             create_git_commit(path, commit)
 
         if tag is not None:

@@ -1,6 +1,6 @@
 import pytest
 
-from cocobump.cleaners import clean_body, clean_commit_subject, clean_tag_ref
+from convbump.cleaners import clean_body, clean_commit_subject, clean_tag_ref
 
 COMMIT_BODY = """Other:
 ------

@@ -2,13 +2,13 @@ import datetime
 
 import pytest
 
-from cocobump.changelog import (
+from convbump.changelog import (
     COMMIT_TYPE_FEATURE,
     ChangeLog,
     ConventionalCommit,
     version_header,
 )
-from cocobump.enums import ChangeLogTypeEnum, FormatTypeEnum
+from convbump.enums import ChangeLogTypeEnum, FormatTypeEnum
 
 CI_BREAKING_COMMIT = "ci!: Use badabump release bot for pushing tags"
 
@@ -34,7 +34,7 @@ REFACTOR_COMMIT = """refactor: Change algorigthm to use
 Fixes: DEV-1010
 """
 
-CHANGELOG_EMPTY = "No changes since last pre-release"
+CHANGELOG_EMPTY = ""
 
 CHANGELOG_FILE_MD = """## Features:
 
@@ -195,6 +195,11 @@ def test_changelog_format_git(format_type, is_pre_release, expected):
 def test_changelog_invalid_commit():
     with pytest.raises(ValueError):
         ChangeLog.from_git_commits([INVALID_COMMIT])
+
+
+def test_changelog_skip_invalid_commit():
+    changelog = ChangeLog.from_git_commits([INVALID_COMMIT], skip_failed=True)
+    assert changelog.commits == ()
 
 
 def test_changelog_with_feature_commit():

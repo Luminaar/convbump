@@ -1,20 +1,19 @@
 [tool.poetry]
-name = "cocobump"
+name = "convbump"
 version = "0.1.0"
 description = "Manage changelog and bump project version number using conventional commits from latest git tag."
 authors = ["Max Kovykov <kovykmax@gmail.com>", "Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
 readme = "README.md"
-repository = "https://github.com/Luminaar/cocobump"
+repository = "https://github.com/Luminaar/convbump"
 packages = [
-  {include = "cocobump", from = "src"},
+  {include = "convbump", from = "src"},
 ]
 keywords = ["changelog", "conventional commit", "bump", "version", "calver", "semver", "pre release"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
   "Intended Audience :: Developers",
   "Intended Audience :: System Administrators",
-  "Environment :: Console",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
@@ -27,6 +26,7 @@ classifiers = [
 python = "^3.7"
 attrs = ">=20.2.0,<22"
 toml = "^0.10.1"
+click = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"
@@ -34,12 +34,12 @@ pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 time-machine = "^2.1.0"
 poethepoet = "^0.10.0"
-black = "21.6b0"
-isort = "^5.9.1"
+black = "21.7b0"
+isort = "^5.9.3"
 
 [tool.poetry.scripts]
-cocobump = "cocobump.cli.app:main"
-cocobump-ci = "cocobump.cli.ci_app:main"
+convbump-version = "convbump.app:version"
+convbump-changelog = "convbump.app:changelog"
 
 [tool.poe.tasks]
 _black = "black ."
