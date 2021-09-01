@@ -30,7 +30,7 @@ click = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "^5.5"
-pytest = "^6.2.4"
+pytest = "^6.2.5"
 pytest-cov = "^2.12.1"
 time-machine = "^2.1.0"
 poethepoet = "^0.10.0"
