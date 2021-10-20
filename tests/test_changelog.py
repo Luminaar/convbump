@@ -34,6 +34,8 @@ REFACTOR_COMMIT = """refactor: Change algorigthm to use
 Fixes: DEV-1010
 """
 
+CASE_INSESITIVE_COMMIT = "Feat: small feature"
+
 CHANGELOG_EMPTY = ""
 
 CHANGELOG_FILE_MD = """## Features:
@@ -214,6 +216,13 @@ def test_changelog_with_fix_commit():
     assert changelog.has_breaking_change is False
     assert changelog.has_minor_change is False
     assert changelog.has_micro_change is True
+
+
+def test_changelog_with_case_insentivie_commit():
+    changelog = ChangeLog.from_git_commits([CASE_INSESITIVE_COMMIT])
+    assert changelog.has_breaking_change is False
+    assert changelog.has_minor_change is True
+    assert changelog.has_micro_change is False
 
 
 def test_commit_ci_breaking():

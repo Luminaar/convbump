@@ -115,11 +115,11 @@ class ChangeLog:
         other_commits: List[ConventionalCommit] = []
 
         for commit in self.commits:
-            if commit.commit_type == COMMIT_TYPE_FEATURE:
+            if commit.commit_type.lower() == COMMIT_TYPE_FEATURE:
                 feature_commits.append(commit)
-            elif commit.commit_type == COMMIT_TYPE_FIX:
+            elif commit.commit_type.lower() == COMMIT_TYPE_FIX:
                 fix_commits.append(commit)
-            elif commit.commit_type == COMMIT_TYPE_REFACTOR:
+            elif commit.commit_type.lower() == COMMIT_TYPE_REFACTOR:
                 refactor_commits.append(commit)
             else:
                 other_commits.append(commit)

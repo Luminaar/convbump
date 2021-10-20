@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "convbump"
-version = "0.1.0"
+version = "0.1.1"
 description = "Manage changelog and bump project version number using conventional commits from latest git tag."
 authors = ["Max Kovykov <kovykmax@gmail.com>", "Igor Davydenko <iam@igordavydenko.com>"]
 license = "BSD-3-Clause"
