@@ -1,8 +1,25 @@
 [tool.poetry]
 name = "convbump"
-version = "0.1.0"
+version = "0.2.0"
 description = "Tool for Conventional Commits"
 authors = ["Max Kovykov <maxim.kovykov@avast.com>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+keywords = ["changelog", "conventional commit", "bump", "version", "calver"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "Environment :: Console",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development",
+  "Topic :: Utilities",
+  "Typing :: Typed"
+]
 packages = [
     {include="convbump", from="src"}
 ]
@@ -10,6 +27,8 @@ include = ["py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+semver = "^2.13.0"
+click = "^8.0.3"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.931"
@@ -21,10 +40,10 @@ black = "21.6b0"
 isort = "^5.9.1"
 
 [tool.poetry.scripts]
-convbump = "convbump.__main__:main"
+convbump = "convbump.__main__:convbump"
 
 [tool.pytest.ini_options]
-addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml"
+addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml --mypy"
 
 [tool.poe.tasks]
 _black = "black ."

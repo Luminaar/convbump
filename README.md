@@ -1,7 +1,17 @@
 Convbump
 =====
+[![Python versions](https://img.shields.io/pypi/pyversions/convbump)](https://pypi.org/project/convbump/)
+[![Latest Version](https://img.shields.io/pypi/v/convbump.svg)](https://pypi.org/project/convbump/)
+[![BSD License](https://img.shields.io/pypi/l/convbump.svg)](https://github.com/playpauseandstop/convbump/blob/master/LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Tool for Conventional Commits
+`convbump` is a simple tool to work with conventional commits.
+
+Use the `version` command to find the next version in your repository
+based on the conventional commits.
+
+Use the `changelog` command to generate a nicely formatted changelog
+(Github markdown compatible).
 
 ## Development
 The application is written in Python and uses
@@ -28,8 +38,8 @@ or
 
 `pytest` will take configuration from `pytest.ini` file first (if present), then
 from `pyproject.toml`. Add any local configuration to `pytest.ini`.
-Configuration in `pyproject.toml` will be used in Teamcity. You can run your
-tests the same way as Teamcity to catch any errors
+Configuration in `pyproject.toml` will be used in CI. You can run your
+tests the same way as CI to catch any errors
 
 	$ pytest -c pyproject.toml
 
