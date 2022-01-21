@@ -30,6 +30,7 @@ CHORE_WITH_SCOPE = "chore(deps): Update deps"
 
 OTHER_COMMIT = "fake: Some other type of commit"
 
+
 @pytest.fixture(scope="session")
 def git_config() -> None:
     """If user.email and user.name are not set, call git config."""
@@ -43,7 +44,9 @@ def git_config() -> None:
 
 
 @pytest.fixture()
-def create_git_repository(git_config: None, tmp_path: Path) -> GitFactory:  # pylint: disable=unused-argument
+def create_git_repository(
+    git_config: None, tmp_path: Path
+) -> GitFactory:  # pylint: disable=unused-argument
     def _(commits: Collection[Union[CommitTuple, str]]) -> Git:
         subprocess.check_call(["git", "init"], cwd=tmp_path)
 

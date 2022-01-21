@@ -43,14 +43,17 @@ REGEX_PARAMS = [
 
 
 @pytest.mark.parametrize("subject, result", REGEX_PARAMS)
-def test_subject_regex(subject: str, result: Tuple[str, str, bool , str]) -> None:
+def test_subject_regex(subject: str, result: Tuple[str, str, bool, str]) -> None:
     assert parse_subject(subject) == result
 
 
-@pytest.mark.parametrize("subject", [
-    "feat",
-    "feat:",
-])
+@pytest.mark.parametrize(
+    "subject",
+    [
+        "feat",
+        "feat:",
+    ],
+)
 def test_subject_regex_invalid(subject: str) -> None:
     with pytest.raises(ValueError):
         parse_subject(subject)

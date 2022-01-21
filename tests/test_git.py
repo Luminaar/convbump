@@ -84,3 +84,12 @@ def test_repository_not_valid_tags(create_git_repository: GitFactory) -> None:
     git = create_git_repository([(INITIAL_COMMIT, "not-a-version"), ("Second", "not-a-version-2")])
 
     assert git.retrieve_last_version() == (None, None)
+
+
+def test_tag_order(create_git_repository: GitFactory) -> None:
+    git = create_git_repository(
+        [(INITIAL_COMMIT, "v1"), ("Second", "v1.9.0"), ("Third", "v1.10.0")]
+    )
+
+    _, version = git.retrieve_last_version()
+    assert version == Version(1, 10, 0)

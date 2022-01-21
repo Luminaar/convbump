@@ -1,9 +1,11 @@
 from typing import List
+
 import pytest
 
 from convbump.conventional import CommitType
 from convbump.conventional import ConventionalCommit as CC
 from convbump.version import DEFAULT_FIRST_VERSION, get_next_version
+
 
 def test_get_next_version_do_nothing() -> None:
     next_version = get_next_version(DEFAULT_FIRST_VERSION, [])

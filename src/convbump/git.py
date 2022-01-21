@@ -62,7 +62,7 @@ class Git:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None."""
 
-        tags = reversed(self._check_output(["git", "tag"]).split("\n"))
+        tags = reversed(self._check_output(["git", "tag", "--sort=v:refname"]).split("\n"))
         for tag in tags:
             match = TAG_REGEX.match(tag)
             if match:
