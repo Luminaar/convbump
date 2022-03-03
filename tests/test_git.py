@@ -36,10 +36,10 @@ def test_repository_list_commits_from_ref_to_ref(create_git_repository: GitFacto
 
 
 PARAMS = [
-    ("v1", Version(1, 0, 0)),
-    ("v10", Version(10, 0, 0)),
-    ("v1.0", Version(1, 0, 0)),
-    ("v1.1.10", Version(1, 1, 10)),
+    ("refs/tags/v1", Version(1, 0, 0)),
+    ("refs/tags/v10", Version(10, 0, 0)),
+    ("refs/tags/v1.0", Version(1, 0, 0)),
+    ("refs/tags/v1.1.10", Version(1, 1, 10)),
 ]
 
 

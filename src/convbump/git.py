@@ -1,16 +1,18 @@
 import re
 import subprocess
 from dataclasses import dataclass
+from operator import itemgetter
 from pathlib import Path
 from typing import Iterable, Iterator, List, Optional, Tuple
 
+from dulwich.repo import Repo
 from semver import VersionInfo as Version
 
 # Default version tag regex. It is used to find the last valid git tag.
 # This regex will match the following tags: "v1", "v1.0", "v1.0.0"
 TAG_REGEX = re.compile(
     r"""^
-        v                           # literal 'v'
+        refs/tags/v                 # literal 'refs/tags/v'
         (?P<major>\d+)              # Major version is required
         (?:\.                       # Optional non-capturing group with minor and patch versions
             (?P<minor>\d+)          # Optional minor version
@@ -35,6 +37,7 @@ class Commit:
 class Git:
     def __init__(self, path: Path) -> None:
         self.path = path
+        self.repo = Repo(self.path)  # type: ignore
 
     def list_commits(self, from_ref: Optional[str], to_ref: Optional[str] = None) -> List[Commit]:
         def iter_commtis(commit_ids: Iterable[str]) -> Iterator[Commit]:
@@ -62,14 +65,28 @@ class Git:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None."""
 
-        tags = reversed(self._check_output(["git", "tag", "--sort=v:refname"]).split("\n"))
-        for tag in tags:
-            match = TAG_REGEX.match(tag)
+        tag_refs = filter(lambda ref: ref.startswith(b"refs/tags/v"), self.repo.get_refs())
+
+        tag_version_list = []
+        for tag in tag_refs:
+            str_tag = tag.decode()
+            match = TAG_REGEX.match(str_tag)
             if match:
                 match_dict = match.groupdict()
-                return tag, Version(
-                    match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
+
+            tag_version_list.append(
+                (
+                    str_tag,
+                    Version(
+                        match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
+                    ),
                 )
+            )
+
+        sorted_tags = sorted(tag_version_list, key=itemgetter(1))
+
+        if sorted_tags:
+            return sorted_tags[-1]
         else:
             return None, None
 
