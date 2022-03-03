@@ -30,6 +30,7 @@ include = ["py.typed"]
 python = "^3.7"
 semver = "^2.13.0"
 click = "^8.0.3"
+dulwich = "^0.20.32"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.931"
