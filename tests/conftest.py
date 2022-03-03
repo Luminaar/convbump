@@ -45,8 +45,8 @@ def git_config() -> None:
 
 @pytest.fixture()
 def create_git_repository(
-    git_config: None, tmp_path: Path
-) -> GitFactory:  # pylint: disable=unused-argument
+    git_config: None, tmp_path: Path  # pylint: disable=unused-argument
+) -> GitFactory:
     def _(commits: Collection[Union[CommitTuple, str]]) -> Git:
         subprocess.check_call(["git", "init"], cwd=tmp_path)
 
