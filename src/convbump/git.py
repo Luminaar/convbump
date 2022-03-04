@@ -29,7 +29,7 @@ TAG_REGEX = re.compile(
 @dataclass(frozen=True)
 class Commit:
 
-    hash: str
+    hash: bytes
     subject: str
     body: Optional[str]
 
