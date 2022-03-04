@@ -95,7 +95,7 @@ class Git:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None."""
 
-        tag_refs = filter(lambda ref: ref.startswith(b"refs/tags/v"), self.repo.get_refs())
+        tag_refs = filter(lambda ref: ref.startswith(b"refs/tags"), self.repo.get_refs())
 
         tag_version_list = []
         for tag in tag_refs:
@@ -104,14 +104,14 @@ class Git:
             if match:
                 match_dict = match.groupdict()
 
-            tag_version_list.append(
-                (
-                    str_tag,
-                    Version(
-                        match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
-                    ),
+                tag_version_list.append(
+                    (
+                        str_tag,
+                        Version(
+                            match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
+                        ),
+                    )
                 )
-            )
 
         sorted_tags = sorted(tag_version_list, key=itemgetter(1))
 
