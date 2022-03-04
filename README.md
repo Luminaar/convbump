@@ -13,6 +13,12 @@ based on the conventional commits.
 Use the `changelog` command to generate a nicely formatted changelog
 (Github markdown compatible).
 
+## Requirements
+`convbump` does not have any external dependencies.
+
+`convbump` uses a pure Python library to access the Git repository and so does not
+require a `git` executable.
+
 ## Development
 The application is written in Python and uses
 [Poetry](https://python-poetry.org/docs/) to configure the package and manage
