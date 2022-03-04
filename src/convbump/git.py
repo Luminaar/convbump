@@ -70,15 +70,15 @@ class Git:
         """
 
         try:
-            walker = self.repo.get_walker(reverse=True)
+            walker = self.repo.get_walker(reverse=True)  # type: ignore
         except KeyError:  # Repo is empty
             return []
 
         # Convert from_ref to SHA if it is a tag name
-        from_sha = self.repo.get_peeled(from_tag) if from_tag else None
+        from_sha = self.repo.get_peeled(from_tag) if from_tag else None  # type: ignore
 
         # Convert to_ref to SHA if it is a tag name
-        to_sha = self.repo.get_peeled(to_tag) if to_tag else None
+        to_sha = self.repo.get_peeled(to_tag) if to_tag else None  # type: ignore
 
         if from_sha is None:
             add = True
