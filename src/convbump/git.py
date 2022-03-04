@@ -1,5 +1,4 @@
 import re
-import subprocess
 from dataclasses import dataclass
 from operator import itemgetter
 from pathlib import Path
@@ -92,9 +91,6 @@ class Git:
 
         return commits
 
-    def retrieve_last_commit(self) -> str:
-        return self._check_output(["git", "log", "-1", "--format=%B"])
-
     def retrieve_last_version(self) -> Tuple[Optional[str], Optional[Version]]:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None."""
@@ -123,27 +119,3 @@ class Git:
             return sorted_tags[-1]
         else:
             return None, None
-
-    def retrieve_tag_body(self, tag: str) -> str:
-        return self._check_output(["git", "tag", "-l", "--format=%(body)", tag])
-
-    def retrieve_tag_subject(self, tag: str) -> str:
-        return self._check_output(["git", "tag", "-l", "--format=%(subject)", tag])
-
-    def _check_output(self, args: List[str]) -> str:
-        maybe_output = subprocess.check_output(args, cwd=self.path)
-        if maybe_output is not None:
-            return maybe_output.strip().decode("utf-8")
-
-        raise ValueError("git command return unexpected empty output")
-
-    def _parse_commits(self, args: List[str]) -> Commit:
-        maybe_output = subprocess.check_output(args, cwd=self.path)
-        if maybe_output is not None:
-            output = maybe_output.strip().decode("utf-8")
-
-            hash, subject, *body = output.split("\n")
-
-            return Commit(hash, subject, "\n".join(body) if body else None)
-
-        raise ValueError("git command return unexpected empty output")
