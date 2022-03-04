@@ -91,7 +91,7 @@ class Git:
 
         return commits
 
-    def retrieve_last_version(self) -> Tuple[Optional[str], Optional[Version]]:
+    def retrieve_last_version(self) -> Tuple[Optional[bytes], Optional[Version]]:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None."""
 
@@ -99,14 +99,13 @@ class Git:
 
         tag_version_list = []
         for tag in tag_refs:
-            str_tag = tag.decode()
-            match = TAG_REGEX.match(str_tag)
+            match = TAG_REGEX.match(tag.decode())
             if match:
                 match_dict = match.groupdict()
 
                 tag_version_list.append(
                     (
-                        str_tag,
+                        tag,
                         Version(
                             match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
                         ),
