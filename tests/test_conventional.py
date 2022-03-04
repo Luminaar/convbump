@@ -78,7 +78,7 @@ def make_commit(commit_message: str) -> Commit:
     subject, *rest = commit_message.split("\n")
     body = "\n".join(rest) if rest else None
 
-    return Commit("f392ca5", subject, body)
+    return Commit(b"f392ca5", subject, body)
 
 
 COMMIT_PARAMS = [

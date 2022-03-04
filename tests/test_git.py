@@ -1,8 +1,24 @@
+from typing import Tuple
+
 import pytest
 from conftest import BREAKING_FEATURE, INITIAL_COMMIT, GitFactory
 from semver import VersionInfo as Version
 
-from convbump.git import TAG_REGEX
+from convbump.git import TAG_REGEX, parse_message
+
+MESSAGES = [
+    ("Subject\n\nBody", ("Subject", "Body")),
+    ("Subject\n\nParagraph\n\nParagraph", ("Subject", "Paragraph\n\nParagraph")),
+    ("Subject", ("Subject", "")),
+    ("First line\nSecond line", ("", "First line\nSecond line")),
+    ("", ("", "")),
+]
+
+
+@pytest.mark.parametrize("message, result", MESSAGES)
+def test_parse_message(message: str, result: Tuple[str, str]) -> None:
+
+    assert parse_message(message) == result
 
 
 def test_repository_empty(create_git_repository: GitFactory) -> None:
@@ -11,12 +27,23 @@ def test_repository_empty(create_git_repository: GitFactory) -> None:
     assert len(git.list_commits(None)) == 0
 
 
+def test_repository_list_commits(create_git_repository: GitFactory) -> None:
+    commits = ["First", "Second"]
+    git = create_git_repository(commits)
+
+    commit_list = git.list_commits(None)
+
+    assert len(commit_list) == 2
+
+    assert [c.subject for c in commit_list] == ["First", "Second"]
+
+
 def test_repository_list_commits_from_ref(create_git_repository: GitFactory) -> None:
 
     commits = ["First", ("Second", "v1"), "Third", "Fourth"]
     git = create_git_repository(commits)
 
-    commit_list = git.list_commits("v1")
+    commit_list = git.list_commits(b"refs/tags/v1")
 
     assert len(commit_list) == 2
 
@@ -28,18 +55,30 @@ def test_repository_list_commits_from_ref_to_ref(create_git_repository: GitFacto
     commits = [("First", "v1"), "Second", "Third", ("Fourth", "v2"), "Fifth"]
     git = create_git_repository(commits)
 
-    commit_list = git.list_commits("v1", "v2")
+    commit_list = git.list_commits(b"refs/tags/v1", b"refs/tags/v2")
 
     assert len(commit_list) == 3
 
     assert [c.subject for c in commit_list] == ["Second", "Third", "Fourth"]
 
 
+def test_repository_list_commits_to_ref(create_git_repository: GitFactory) -> None:
+
+    commits = [("First", "v1"), "Second", "Third", ("Fourth", "v2"), "Fifth"]
+    git = create_git_repository(commits)
+
+    commit_list = git.list_commits(None, b"refs/tags/v2")
+
+    assert len(commit_list) == 4
+
+    assert [c.subject for c in commit_list] == ["First", "Second", "Third", "Fourth"]
+
+
 PARAMS = [
-    ("v1", Version(1, 0, 0)),
-    ("v10", Version(10, 0, 0)),
-    ("v1.0", Version(1, 0, 0)),
-    ("v1.1.10", Version(1, 1, 10)),
+    ("refs/tags/v1", Version(1, 0, 0)),
+    ("refs/tags/v10", Version(10, 0, 0)),
+    ("refs/tags/v1.0", Version(1, 0, 0)),
+    ("refs/tags/v1.1.10", Version(1, 1, 10)),
 ]
 
 

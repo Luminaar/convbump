@@ -84,7 +84,7 @@ class ConventionalCommit:
             is_breaking=is_breaking,
             subject=subject,
             body=git_commit.body or None,
-            hash=git_commit.hash,
+            hash=git_commit.hash.decode()[:7],
         )
 
     def format(self) -> str:
