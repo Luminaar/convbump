@@ -55,22 +55,32 @@ class Git:
         self.repo = Repo(self.path)  # type: ignore
 
     def list_commits(
-        self, from_ref: Optional[bytes], to_ref: Optional[bytes] = None
+        self, from_tag: Optional[bytes], to_tag: Optional[bytes] = None
     ) -> List[Commit]:
+        """List commits from `from_tag` to `to_tag`. If `to_tag` is None,
+        list commits until the latest commits.
+
+        If `from_tag` list commits from the first commits.
+
+        If `from_tag` and `to_tag` is None, list all commits.
+
+        `from_tag` and `to_tag` must be a full tag name:
+
+            refs/tags/tag_name
+        """
+
         try:
             walker = self.repo.get_walker(reverse=True)
         except KeyError:  # Repo is empty
             return []
 
         # Convert from_ref to SHA if it is a tag name
-        _, from_sha_or_none = self.repo.refs.follow(from_ref or b"")
-        from_sha = from_sha_or_none if from_sha_or_none else from_ref
+        from_sha = self.repo.get_peeled(from_tag) if from_tag else None
 
         # Convert to_ref to SHA if it is a tag name
-        _, to_sha_or_none = self.repo.refs.follow(to_ref or b"")
-        to_sha = to_sha_or_none if to_sha_or_none else to_ref
+        to_sha = self.repo.get_peeled(to_tag) if to_tag else None
 
-        if from_sha is None and to_sha is None:
+        if from_sha is None:
             add = True
         else:
             add = False
@@ -86,7 +96,7 @@ class Git:
 
             if hash == from_sha:
                 add = True
-            if to_ref and hash == to_sha:
+            if to_tag and hash == to_sha:
                 break
 
         return commits

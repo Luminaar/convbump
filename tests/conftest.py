@@ -61,7 +61,7 @@ def create_git_repository(
 
             subprocess.check_call(["git", "commit", "--allow-empty", "-m", message], cwd=tmp_path)
             if tag is not None:
-                subprocess.check_call(["git", "tag", tag], cwd=tmp_path)
+                subprocess.check_call(["git", "tag", "-a", "-m", "message", tag], cwd=tmp_path)
 
         return Git(tmp_path)
 

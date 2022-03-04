@@ -62,6 +62,18 @@ def test_repository_list_commits_from_ref_to_ref(create_git_repository: GitFacto
     assert [c.subject for c in commit_list] == ["Second", "Third", "Fourth"]
 
 
+def test_repository_list_commits_to_ref(create_git_repository: GitFactory) -> None:
+
+    commits = [("First", "v1"), "Second", "Third", ("Fourth", "v2"), "Fifth"]
+    git = create_git_repository(commits)
+
+    commit_list = git.list_commits(None, b"refs/tags/v2")
+
+    assert len(commit_list) == 4
+
+    assert [c.subject for c in commit_list] == ["First", "Second", "Third", "Fourth"]
+
+
 PARAMS = [
     ("refs/tags/v1", Version(1, 0, 0)),
     ("refs/tags/v10", Version(10, 0, 0)),
