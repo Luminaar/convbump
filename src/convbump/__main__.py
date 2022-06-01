@@ -23,7 +23,7 @@ def _run(git: Git, strict: bool, scope: Optional[str] = None) -> Tuple[Version, 
 
     If `scope` is not None, only commits and tags for given scope are considered."""
 
-    tag, current_version = git.retrieve_last_version()
+    tag, current_version = git.retrieve_last_version(scope)
     if not current_version:
         echo("Using default first version")
         return DEFAULT_FIRST_VERSION, ""

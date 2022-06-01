@@ -12,7 +12,12 @@ from semver import VersionInfo as Version
 # This regex will match the following tags: "v1", "v1.0", "v1.0.0"
 TAG_REGEX = re.compile(
     r"""^
-        refs/tags/v                 # literal 'refs/tags/v'
+        refs/tags/                  # literal 'refs/tags/
+        (?:                         # Optional non-campturing group with the scope
+            (?P<scope>.*)           # Optional scope
+            -                       # Literal '-' (delimiter)
+        )?
+        v                           # literal 'v'
         (?P<major>\d+)              # Major version is required
         (?:\.                       # Optional non-capturing group with minor and patch versions
             (?P<minor>\d+)          # Optional minor version
@@ -101,9 +106,11 @@ class Git:
 
         return commits
 
-    def retrieve_last_version(self) -> Tuple[Optional[bytes], Optional[Version]]:
+    def retrieve_last_version(self, scope: Optional[str] = None) -> Tuple[Optional[bytes], Optional[Version]]:
         """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
-        Return a tuple with tag name and version or None."""
+        Return a tuple with tag name and version or None.
+
+        If `scope` is not None, only consider tags with this scope."""
 
         tag_refs = filter(lambda ref: ref.startswith(b"refs/tags"), self.repo.get_refs())
 
@@ -113,14 +120,17 @@ class Git:
             if match:
                 match_dict = match.groupdict()
 
-                tag_version_list.append(
-                    (
-                        tag,
-                        Version(
-                            match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
-                        ),
+                matched_scope = match_dict.get("scope")
+
+                if scope == matched_scope:
+                    tag_version_list.append(
+                        (
+                            tag,
+                            Version(
+                                match_dict["major"], match_dict["minor"] or 0, match_dict["patch"] or 0
+                            ),
+                        )
                     )
-                )
 
         sorted_tags = sorted(tag_version_list, key=itemgetter(1))
 
