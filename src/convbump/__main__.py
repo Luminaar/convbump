@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
 
 import click
 from semver import VersionInfo as Version
@@ -15,11 +15,15 @@ def echo(*values: str) -> None:
     print(*values, file=sys.stderr)
 
 
-def _run(git: Git, strict: bool) -> Tuple[Version, str]:
+def _run(git: Git, strict: bool, scope: Optional[str] = None) -> Tuple[Version, str]:
     """Find the next version and generate a changelog from
-    conventional commits."""
+    conventional commits.
 
-    tag, current_version = git.retrieve_last_version()
+    If `strict` is True, non-conventional commits are not allowed and the command will fail.
+
+    If `scope` is not None, only commits and tags for given scope are considered."""
+
+    tag, current_version = git.retrieve_last_version(scope)
     if not current_version:
         echo("Using default first version")
         return DEFAULT_FIRST_VERSION, ""
@@ -27,7 +31,9 @@ def _run(git: Git, strict: bool) -> Tuple[Version, str]:
     conventional_commits = []
     for commit in git.list_commits(tag):
         try:
-            conventional_commits.append(ConventionalCommit.from_git_commit(commit))
+            conventional_commit = ConventionalCommit.from_git_commit(commit)
+            if scope == conventional_commit.scope:
+                conventional_commits.append(conventional_commit)
         except ValueError:
             if not strict:
                 continue
@@ -62,11 +68,15 @@ def convbump() -> None:
 @click.option(
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
-def version(ctx: click.Context, project_path: Path, strict: bool) -> None:
+@click.argument("scope", required=False)
+def version(ctx: click.Context, project_path: Path, strict: bool, scope: Optional[str]) -> None:
     """Calculate next version from Git history.
 
     Given a Git repository, this command will find the latest version tag and
     calculate the next version using the Conventional Commits (CC) specification.
+
+    Optional argument SCOPE controls which tags and CCs should be considered (all by default).
+    Use this argument in mono-repos.
 
     Calculated version will be printed out to STDOUT.
 
@@ -76,7 +86,7 @@ def version(ctx: click.Context, project_path: Path, strict: bool) -> None:
     git = Git(project_path)
 
     try:
-        next_version, changelog = _run(git, strict)
+        next_version, changelog = _run(git, strict, scope)
     except ValueError as e:
         ctx.fail(e)  # type: ignore
 
@@ -94,11 +104,15 @@ def version(ctx: click.Context, project_path: Path, strict: bool) -> None:
 @click.option(
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
-def changelog(ctx: click.Context, project_path: Path, strict: bool) -> None:
+@click.argument("scope", required=False)
+def changelog(ctx: click.Context, project_path: Path, strict: bool, scope: Optional[str]) -> None:
     """Create a ChangeLog from Git history.
 
     Given a Git repository, this command will find the latest version tag and
     generate a ChangeLog from Conventional Commits (CC).
+
+    Optional argument SCOPE controls which tags and CCs should be considered (all by default).
+    Use this argument in mono-repos.
 
     Generated ChangeLog will be printed out to STDOUT.
 
@@ -108,7 +122,7 @@ def changelog(ctx: click.Context, project_path: Path, strict: bool) -> None:
     git = Git(project_path)
 
     try:
-        next_version, changelog = _run(git, strict)
+        next_version, changelog = _run(git, strict, scope)
     except ValueError as e:
         ctx.fail(e)  # type: ignore
 
