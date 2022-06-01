@@ -31,7 +31,9 @@ def _run(git: Git, strict: bool, scope: Optional[str] = None) -> Tuple[Version, 
     conventional_commits = []
     for commit in git.list_commits(tag):
         try:
-            conventional_commits.append(ConventionalCommit.from_git_commit(commit))
+            conventional_commit = ConventionalCommit.from_git_commit(commit)
+            if scope == conventional_commit.scope:
+                conventional_commits.append(conventional_commit)
         except ValueError:
             if not strict:
                 continue
