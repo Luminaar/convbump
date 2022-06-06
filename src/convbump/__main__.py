@@ -15,15 +15,16 @@ def echo(*values: str) -> None:
     print(*values, file=sys.stderr)
 
 
-def _run(git: Git, strict: bool, scope: Optional[str] = None) -> Tuple[Version, str]:
+def _run(git: Git, strict: bool, directory: Optional[str] = None) -> Tuple[Version, str]:
     """Find the next version and generate a changelog from
     conventional commits.
 
     If `strict` is True, non-conventional commits are not allowed and the command will fail.
 
-    If `scope` is not None, only commits and tags for given scope are considered."""
+    If `directory` is not None, only commits that affect that directory  and tags
+    containing this directory (normalized) are selected."""
 
-    tag, current_version = git.retrieve_last_version(scope)
+    tag, current_version = git.retrieve_last_version(directory)
     if not current_version:
         echo("Using default first version")
         return DEFAULT_FIRST_VERSION, ""
@@ -31,8 +32,8 @@ def _run(git: Git, strict: bool, scope: Optional[str] = None) -> Tuple[Version, 
     conventional_commits = []
     for commit in git.list_commits(tag):
         try:
-            conventional_commit = ConventionalCommit.from_git_commit(commit)
-            if scope == conventional_commit.scope:
+            if not directory or commit.affects_dir(directory):
+                conventional_commit = ConventionalCommit.from_git_commit(commit)
                 conventional_commits.append(conventional_commit)
         except ValueError:
             if not strict:
@@ -68,15 +69,15 @@ def convbump() -> None:
 @click.option(
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
-@click.argument("scope", required=False)
-def version(ctx: click.Context, project_path: Path, strict: bool, scope: Optional[str]) -> None:
+@click.argument("directory", required=False)
+def version(ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]) -> None:
     """Calculate next version from Git history.
 
     Given a Git repository, this command will find the latest version tag and
     calculate the next version using the Conventional Commits (CC) specification.
 
-    Optional argument SCOPE controls which tags and CCs should be considered (all by default).
-    Use this argument in mono-repos.
+    Optional argument DIRECTORY controls which tags and CCs should be considered (all by default).
+    Use this argument in mono-repos. Only tags and commits affecting DIRECTORY will be selected.
 
     Calculated version will be printed out to STDOUT.
 
@@ -86,7 +87,7 @@ def version(ctx: click.Context, project_path: Path, strict: bool, scope: Optiona
     git = Git(project_path)
 
     try:
-        next_version, changelog = _run(git, strict, scope)
+        next_version, changelog = _run(git, strict, directory)
     except ValueError as e:
         ctx.fail(e)  # type: ignore
 
@@ -104,15 +105,15 @@ def version(ctx: click.Context, project_path: Path, strict: bool, scope: Optiona
 @click.option(
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
-@click.argument("scope", required=False)
-def changelog(ctx: click.Context, project_path: Path, strict: bool, scope: Optional[str]) -> None:
+@click.argument("directory", required=False)
+def changelog(ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]) -> None:
     """Create a ChangeLog from Git history.
 
     Given a Git repository, this command will find the latest version tag and
     generate a ChangeLog from Conventional Commits (CC).
 
-    Optional argument SCOPE controls which tags and CCs should be considered (all by default).
-    Use this argument in mono-repos.
+    Optional argument DIRECTORY controls which tags and CCs should be considered (all by default).
+    Use this argument in mono-repos. Only tags and commits affecting DIRECTORY will be selected.
 
     Generated ChangeLog will be printed out to STDOUT.
 
@@ -122,7 +123,7 @@ def changelog(ctx: click.Context, project_path: Path, strict: bool, scope: Optio
     git = Git(project_path)
 
     try:
-        next_version, changelog = _run(git, strict, scope)
+        next_version, changelog = _run(git, strict, directory)
     except ValueError as e:
         ctx.fail(e)  # type: ignore
 
