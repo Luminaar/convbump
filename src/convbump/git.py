@@ -15,7 +15,7 @@ TAG_REGEX = re.compile(
         refs/tags/                  # literal 'refs/tags/
         (?:                         # Optional non-campturing group with the scope
             (?P<scope>.*)           # Optional scope
-            -                       # Literal '-' (delimiter)
+            /                       # Literal '/' (delimiter)
         )?
         v                           # literal 'v'
         (?P<major>\d+)              # Major version is required

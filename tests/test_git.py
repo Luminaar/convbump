@@ -137,17 +137,17 @@ def test_tag_order(create_git_repository: GitFactory) -> None:
 def test_get_tag_with_scope(create_git_repository: GitFactory) -> None:
     scope = "core"
     git = create_git_repository(
-        [(INITIAL_COMMIT, "core-v1"), ("Second", "core-v1.1.0"), ("Unrelated", "api-v0.1.0")]
+        [(INITIAL_COMMIT, "core-v1"), ("Second", "core/v1.1.0"), ("Unrelated", "api/v0.1.0")]
     )
 
     tag_name, version = git.retrieve_last_version(scope)
-    assert tag_name == b"refs/tags/core-v1.1.0"
+    assert tag_name == b"refs/tags/core/v1.1.0"
     assert version == Version(1, 1, 0)
 
 def test_get_tag_with_scope_no_match(create_git_repository: GitFactory) -> None:
     scope = "core"
     git = create_git_repository(
-        [(INITIAL_COMMIT, "api-v1"), ("Second", "api-v1.1.0")]
+        [(INITIAL_COMMIT, "api/v1"), ("Second", "api/v1.1.0")]
     )
 
     assert git.retrieve_last_version(scope) == (None, None)
