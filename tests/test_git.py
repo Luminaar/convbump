@@ -7,7 +7,7 @@ from semver import VersionInfo as Version
 
 from convbump.git import TAG_REGEX, Commit, parse_message
 
-def test_affects_dir():
+def test_affects_dir() -> None:
     commit = Commit(b"hash", "subject", "message", {Path("lib_a/src/lib_a/module.py"), Path("lib_a/src/lib_a/util.py")})
 
     assert commit.affects_dir("lib_a")
