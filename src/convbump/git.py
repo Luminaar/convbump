@@ -1,8 +1,8 @@
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from operator import itemgetter
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 from dulwich.objects import Commit as RawCommit
 from dulwich.repo import Repo
@@ -37,6 +37,17 @@ class Commit:
     hash: bytes
     subject: str
     body: Optional[str]
+    paths: Set[Path] = field(default_factory=set)
+
+    def affects_dir(self, dir: str) -> bool:
+        for path in self.paths:
+            try:
+                if path.relative_to(dir):
+                    return True
+            except ValueError:
+                pass
+        else:
+            return False
 
 
 def parse_message(message: str) -> Tuple[str, str]:  # Tuple[subject, message]
@@ -58,6 +69,19 @@ class Git:
     def __init__(self, path: Path) -> None:
         self.path = path
         self.repo = Repo(self.path)  # type: ignore
+
+    def get_commit_paths(self, commit: RawCommit) -> Set[Path]:
+        parents = [self.repo[parent] for parent in commit.parents]
+        paths: Set[Path] = set()
+        for parent_commit in parents:
+            old_tree = parent_commit.tree
+            new_tree = commit.tree
+            for (old_path, new_path), _, _ in self.repo.object_store.tree_changes(old_tree, new_tree):  # type: ignore
+                if old_path:
+                    paths.add(Path(old_path.decode()))
+                if new_path:
+                    paths.add(Path(new_path.decode()))
+        return paths
 
     def list_commits(
         self, from_tag: Optional[bytes], to_tag: Optional[bytes] = None
@@ -97,7 +121,8 @@ class Git:
             if add:
                 message = commit.message.decode()
                 subject, body = parse_message(message)
-                commits.append(Commit(hash, subject, body or None))
+                paths = self.get_commit_paths(commit)
+                commits.append(Commit(hash, subject, body or None, paths))
 
             if hash == from_sha:
                 add = True
