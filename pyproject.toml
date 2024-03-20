@@ -29,17 +29,17 @@ include = ["py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-semver = "^2.13.0"
-click = "^8.0.3"
-dulwich = "^0.20.32"
+semver = "^3.0.2"
+click = "^8.1.7"
+dulwich = "^0.21.7"
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.931"
-pytest = "^6.2.2"
-pytest-mypy = "^0.8.0"
-pytest-pylint = "^0.18.0"
-poethepoet = "^0.10.0"
-black = "21.6b0"
+mypy = "^1.9.0"
+pytest = "^8.1.1"
+pytest-mypy = "^0.10.3"
+pytest-pylint = "^0.21.0"
+poethepoet = "^0.25.0"
+black = "^24.3.0"
 isort = "^5.9.1"
 
 [tool.poetry.scripts]
