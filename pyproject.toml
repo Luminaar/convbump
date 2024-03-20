@@ -13,10 +13,11 @@ classifiers = [
   "Environment :: Console",
   "License :: OSI Approved :: BSD License",
   "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Software Development",
   "Topic :: Utilities",
   "Typing :: Typed"
@@ -27,7 +28,7 @@ packages = [
 include = ["py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 semver = "^2.13.0"
 click = "^8.0.3"
 dulwich = "^0.20.32"
