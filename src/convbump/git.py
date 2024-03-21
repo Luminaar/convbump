@@ -99,15 +99,15 @@ class Git:
         """
 
         try:
-            walker = self.repo.get_walker(reverse=True)  # type: ignore
+            walker = self.repo.get_walker(reverse=True)
         except KeyError:  # Repo is empty
             return []
 
         # Convert from_ref to SHA if it is a tag name
-        from_sha = self.repo.get_peeled(from_tag) if from_tag else None  # type: ignore
+        from_sha = self.repo.get_peeled(from_tag) if from_tag else None
 
         # Convert to_ref to SHA if it is a tag name
-        to_sha = self.repo.get_peeled(to_tag) if to_tag else None  # type: ignore
+        to_sha = self.repo.get_peeled(to_tag) if to_tag else None
 
         if from_sha is None:
             add = True
@@ -154,9 +154,9 @@ class Git:
                         (
                             tag,
                             Version(
-                                match_dict["major"],
-                                match_dict["minor"] or 0,
-                                match_dict["patch"] or 0,
+                                match_dict["major"],  # type: ignore
+                                match_dict["minor"] or 0,  # type: ignore
+                                match_dict["patch"] or 0,  # type: ignore
                             ),
                         )
                     )

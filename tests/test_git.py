@@ -101,7 +101,7 @@ def test_git_tag_regex(tag: str, version: Version) -> None:
     minor = match_dict["minor"] or 0
     patch = match_dict["patch"] or 0
 
-    assert Version(major, minor, patch) == version
+    assert Version(major, minor, patch) == version  # type: ignore
 
 
 def test_repository_get_last_valid_version_tag(create_git_repository: GitFactory) -> None:
