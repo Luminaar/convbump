@@ -13,21 +13,21 @@ def test_get_next_version_do_nothing() -> None:
 
 
 BREAKING_PARAMS = [
-    [CC(CommitType.FEAT, None, True, "", "", "")],  # Single breaking feature
+    [CC(CommitType.FEAT, None, True, "", "", "", "")],  # Single breaking feature
     [
-        CC(CommitType.FEAT, None, True, "", "", ""),
-        CC(CommitType.FIX, None, False, "", "", ""),
+        CC(CommitType.FEAT, None, True, "", "", "", ""),
+        CC(CommitType.FIX, None, False, "", "", "", ""),
     ],  # Breaking feature and a fix
     [
-        CC(CommitType.FEAT, None, True, "", "", ""),
-        CC(CommitType.FIX, None, True, "", "", ""),
+        CC(CommitType.FEAT, None, True, "", "", "", ""),
+        CC(CommitType.FIX, None, True, "", "", "", ""),
     ],  # Two breaking changes
     [
-        CC(CommitType.FEAT, None, False, "", "", ""),
-        CC(CommitType.FIX, None, True, "", "", ""),
+        CC(CommitType.FEAT, None, False, "", "", "", ""),
+        CC(CommitType.FIX, None, True, "", "", "", ""),
     ],  # Breaking fix
-    [CC(CommitType.FIX, None, True, "", "", "")],  # Single breaking fix
-    [CC(CommitType.OTHER, None, True, "", "", "")],  # Breaking other
+    [CC(CommitType.FIX, None, True, "", "", "", "")],  # Single breaking fix
+    [CC(CommitType.OTHER, None, True, "", "", "", "")],  # Breaking other
 ]
 
 
@@ -42,14 +42,14 @@ def test_get_next_version_bump_major(commits: List[CC]) -> None:
 
 
 MINOR_PARAMS = [
-    [CC(CommitType.FEAT, None, False, "", "", "")],  # Single non-breaking feature
+    [CC(CommitType.FEAT, None, False, "", "", "", "")],  # Single non-breaking feature
     [
-        CC(CommitType.FEAT, None, False, "", "", ""),
-        CC(CommitType.FEAT, None, False, "", "", ""),
+        CC(CommitType.FEAT, None, False, "", "", "", ""),
+        CC(CommitType.FEAT, None, False, "", "", "", ""),
     ],  # Two non-breaking features
     [
-        CC(CommitType.FEAT, None, False, "", "", ""),
-        CC(CommitType.FIX, None, False, "", "", ""),
+        CC(CommitType.FEAT, None, False, "", "", "", ""),
+        CC(CommitType.FIX, None, False, "", "", "", ""),
     ],  # Feature and a fix
 ]
 
@@ -65,18 +65,18 @@ def test_get_next_version_bump_minor(commits: List[CC]) -> None:
 
 
 PATCH_PARAMS = [
-    [CC(CommitType.FIX, None, False, "", "", "")],  # Single non-breaking fix
+    [CC(CommitType.FIX, None, False, "", "", "", "")],  # Single non-breaking fix
     [
-        CC(CommitType.FIX, None, False, "", "", ""),
-        CC(CommitType.FIX, None, False, "", "", ""),
+        CC(CommitType.FIX, None, False, "", "", "", ""),
+        CC(CommitType.FIX, None, False, "", "", "", ""),
     ],  # Two non-breaking fixes
-    [CC(CommitType.CHORE, None, False, "", "", "")],
-    [CC(CommitType.DOCS, None, False, "", "", "")],
-    [CC(CommitType.TEST, None, False, "", "", "")],
-    [CC(CommitType.REFACTOR, None, False, "", "", "")],
-    [CC(CommitType.STYLE, None, False, "", "", "")],
-    [CC(CommitType.CI, None, False, "", "", "")],
-    [CC(CommitType.OTHER, None, False, "", "", "")],
+    [CC(CommitType.CHORE, None, False, "", "", "", "")],
+    [CC(CommitType.DOCS, None, False, "", "", "", "")],
+    [CC(CommitType.TEST, None, False, "", "", "", "")],
+    [CC(CommitType.REFACTOR, None, False, "", "", "", "")],
+    [CC(CommitType.STYLE, None, False, "", "", "", "")],
+    [CC(CommitType.CI, None, False, "", "", "", "")],
+    [CC(CommitType.OTHER, None, False, "", "", "", "")],
 ]
 
 
