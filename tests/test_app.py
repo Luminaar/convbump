@@ -1,5 +1,5 @@
 import pytest
-from conftest import BREAKING_FEATURE_IN_BODY, FEATURE, FIX, INITIAL_COMMIT, GitFactory
+from conftest import BREAKING_FEATURE_IN_BODY, FEATURE, FIX, INITIAL_COMMIT, GitFactory, CHORE
 
 from convbump.__main__ import _run
 from convbump.version import DEFAULT_FIRST_VERSION

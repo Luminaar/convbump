@@ -127,6 +127,6 @@ def changelog(ctx: click.Context, project_path: Path, strict: bool, directory: O
     except ValueError as e:
         ctx.fail(e)  # type: ignore
 
-    echo("Next version:", next_version)
+    echo("Next version:", str(next_version))
     echo("\nChanges:")
     print(changelog)
