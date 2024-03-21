@@ -65,6 +65,7 @@ class ConventionalCommit:
     subject: str
     body: Optional[str]
     hash: str
+    raw_subject: str
 
     @classmethod
     def from_git_commit(cls, git_commit: Commit) -> ConventionalCommit:
@@ -85,6 +86,7 @@ class ConventionalCommit:
             subject=subject,
             body=git_commit.body or None,
             hash=git_commit.hash.decode()[:7],
+            raw_subject=git_commit.subject,
         )
 
     def format(self) -> str:
