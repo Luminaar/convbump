@@ -7,13 +7,20 @@ from semver import VersionInfo as Version
 
 from convbump.git import TAG_REGEX, Commit, parse_message
 
+
 def test_affects_dir() -> None:
-    commit = Commit(b"hash", "subject", "message", {Path("lib_a/src/lib_a/module.py"), Path("lib_a/src/lib_a/util.py")})
+    commit = Commit(
+        b"hash",
+        "subject",
+        "message",
+        {Path("lib_a/src/lib_a/module.py"), Path("lib_a/src/lib_a/util.py")},
+    )
 
     assert commit.affects_dir("lib_a")
     assert commit.affects_dir("lib_a/src")
     assert not commit.affects_dir("lib_b")
     assert not commit.affects_dir("lib_b/src")
+
 
 MESSAGES = [
     ("Subject\n\nBody", ("Subject", "Body")),
@@ -153,20 +160,24 @@ def test_get_tag_with_directory(create_git_repository: GitFactory) -> None:
     assert tag_name == b"refs/tags/core/v1.1.0"
     assert version == Version(1, 1, 0)
 
+
 def test_get_tag_with_directory_nested(create_git_repository: GitFactory) -> None:
     directory = "core/consumer"
     git = create_git_repository(
-        [(INITIAL_COMMIT, "core/consumer/v1"), ("Second", "core/consumer/v1.1.0"), ("Unrelated", "api/v0.1.0")]
+        [
+            (INITIAL_COMMIT, "core/consumer/v1"),
+            ("Second", "core/consumer/v1.1.0"),
+            ("Unrelated", "api/v0.1.0"),
+        ]
     )
 
     tag_name, version = git.retrieve_last_version(directory)
     assert tag_name == b"refs/tags/core/consumer/v1.1.0"
     assert version == Version(1, 1, 0)
 
+
 def test_get_tag_with_directory_no_match(create_git_repository: GitFactory) -> None:
     directory = "core"
-    git = create_git_repository(
-        [(INITIAL_COMMIT, "api/v1"), ("Second", "api/v1.1.0")]
-    )
+    git = create_git_repository([(INITIAL_COMMIT, "api/v1"), ("Second", "api/v1.1.0")])
 
     assert git.retrieve_last_version(directory) == (None, None)

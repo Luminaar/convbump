@@ -1,5 +1,12 @@
 import pytest
-from conftest import BREAKING_FEATURE_IN_BODY, FEATURE, FIX, INITIAL_COMMIT, GitFactory, CHORE
+from conftest import (
+    BREAKING_FEATURE_IN_BODY,
+    CHORE,
+    FEATURE,
+    FIX,
+    INITIAL_COMMIT,
+    GitFactory,
+)
 
 from convbump.__main__ import _run
 from convbump.version import DEFAULT_FIRST_VERSION
@@ -59,3 +66,4 @@ def test_conventional_commits(create_git_repository: GitFactory) -> None:
     git = create_git_repository([(INITIAL_COMMIT, "v0.1.0"), FEATURE, FIX])
     next_version, _ = _run(git, False)
     assert next_version == DEFAULT_FIRST_VERSION.bump_minor()
+
