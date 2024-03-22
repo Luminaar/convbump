@@ -70,7 +70,9 @@ def convbump() -> None:
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
 @click.argument("directory", required=False)
-def version(ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]) -> None:
+def version(
+    ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]
+) -> None:
     """Calculate next version from Git history.
 
     Given a Git repository, this command will find the latest version tag and
@@ -106,7 +108,9 @@ def version(ctx: click.Context, project_path: Path, strict: bool, directory: Opt
     "--strict", is_flag=True, default=False, help="Fail if non-Conventinal commits are found"
 )
 @click.argument("directory", required=False)
-def changelog(ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]) -> None:
+def changelog(
+    ctx: click.Context, project_path: Path, strict: bool, directory: Optional[str]
+) -> None:
     """Create a ChangeLog from Git history.
 
     Given a Git repository, this command will find the latest version tag and
