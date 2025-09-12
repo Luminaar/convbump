@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from typing import Collection, Dict, List, Optional, Tuple
+from typing import Collection, Dict, Iterable, List, Optional, Tuple
 
 from .git import Commit
 
@@ -80,14 +80,28 @@ def parse_subject(subject: str) -> Tuple[str, Optional[str], bool, str]:
         raise ValueError(f"Invalid conventional commit subject: {subject}")
 
 
-def find_conventional_commit_in_body(body: str) -> Optional[Tuple[str, Optional[str], bool, str]]:
+def should_ignore(message: str, patterns: Iterable[str]) -> bool:
+    for pattern in patterns:
+        if pattern and pattern in message:
+            return True
+    return False
+
+
+def find_conventional_commit_in_body(
+    body: str, ignored_patterns: Optional[Collection[str]] = None
+) -> Optional[Tuple[str, Optional[str], bool, str]]:
     """
     Search for conventional commit patterns in the body text, respecting newlines.
     Returns the highest priority conventional commit found, or None if none found.
     Priority order: feat! > feat > fix > perf/refactor > others
+
+    If ignored_patterns is provided, commits matching those patterns will be excluded.
     """
     if not body:
         return None
+
+    if ignored_patterns is None:
+        ignored_patterns = []
 
     # Split body into lines and search each line
     lines = body.split("\n")
@@ -107,6 +121,11 @@ def find_conventional_commit_in_body(body: str) -> Optional[Tuple[str, Optional[
             # Try to parse this cleaned line as a conventional commit subject
             commit_info = parse_subject(cleaned_line)
             commit_type, _, is_breaking, _ = commit_info
+
+            # Check if this individual commit should be ignored
+            if should_ignore(cleaned_line, ignored_patterns):
+                continue
+
             impact = get_commit_version_impact(commit_type, is_breaking)
             found_commits.append((impact.value, commit_info))
         except ValueError:
@@ -132,10 +151,14 @@ class ConventionalCommit:
     hash: str
     raw_subject: str
     is_conventional: bool = True  # Whether this was parsed as a conventional commit
+    parsed_from_body: bool = False  # Whether this was parsed from body (squashed commit)
 
     @classmethod
-    def from_git_commit(cls, git_commit: Commit) -> ConventionalCommit:
+    def from_git_commit(
+        cls, git_commit: Commit, ignored_patterns: Optional[Collection[str]] = None
+    ) -> ConventionalCommit:
         is_conventional = False
+        parsed_from_body = False
 
         # Try to parse the subject first
         try:
@@ -144,11 +167,14 @@ class ConventionalCommit:
         except ValueError:
             # Subject is not a conventional commit, try to find one in the body
             body_result = (
-                find_conventional_commit_in_body(git_commit.body) if git_commit.body else None
+                find_conventional_commit_in_body(git_commit.body, ignored_patterns)
+                if git_commit.body
+                else None
             )
             if body_result is not None:
                 raw_commit_type, scope, is_breaking, subject = body_result
                 is_conventional = True
+                parsed_from_body = True
             else:
                 # Neither subject nor body contains conventional commit format
                 # Treat as OTHER type commit with original subject
@@ -176,6 +202,7 @@ class ConventionalCommit:
             hash=git_commit.hash.decode()[:7],
             raw_subject=git_commit.subject,
             is_conventional=is_conventional,
+            parsed_from_body=parsed_from_body,
         )
 
     def format(self) -> str:

@@ -144,6 +144,15 @@ SQUASHED_MERGE_ONLY_FIXES = """Bug fixes (#789)
 
 * fix: validation error"""
 
+SQUASHED_MERGE_WITH_IGNORED = """Mixed changes with ignored commits (#999)
+* chore: update dependencies
+
+* fix: critical security fix
+
+* feat: add new dashboard
+
+* chore: update build scripts"""
+
 
 @pytest.fixture(scope="session")
 def git_config() -> None:
