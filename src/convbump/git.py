@@ -99,42 +99,42 @@ class Git:
         """
 
         try:
-            walker = self.repo.get_walker(reverse=True)
+            # Determine include and exclude parameters for proper revision range
+            include = None
+            exclude = None
+
+            if to_tag is not None:
+                # Include commits reachable from to_tag
+                to_sha = self.repo.get_peeled(to_tag)
+                include = [to_sha]
+            else:
+                # Default to HEAD if no to_tag specified
+                include = [self.repo.head()]
+
+            if from_tag is not None:
+                # Exclude commits reachable from from_tag
+                from_sha = self.repo.get_peeled(from_tag)
+                exclude = [from_sha]
+
+            # Get walker with proper include/exclude to implement revision range
+            walker = self.repo.get_walker(include=include, exclude=exclude, reverse=True)
         except KeyError:  # Repo is empty
             return []
 
-        # Convert from_ref to SHA if it is a tag name
-        from_sha = self.repo.get_peeled(from_tag) if from_tag else None
-
-        # Convert to_ref to SHA if it is a tag name
-        to_sha = self.repo.get_peeled(to_tag) if to_tag else None
-
-        if from_sha is None:
-            add = True
-        else:
-            add = False
         commits: List[Commit] = []
         for entry in walker:
             commit: RawCommit = entry.commit
-            hash = commit.id
-
-            if add:
-                message = commit.message.decode()
-                subject, body = parse_message(message)
-                paths = self.get_commit_paths(commit)
-                commits.append(Commit(hash, subject, body or None, paths))
-
-            if hash == from_sha:
-                add = True
-            if to_tag and hash == to_sha:
-                break
+            message = commit.message.decode()
+            subject, body = parse_message(message)
+            paths = self.get_commit_paths(commit)
+            commits.append(Commit(commit.id, subject, body or None, paths))
 
         return commits
 
     def retrieve_last_version(
         self, scope: Optional[str] = None
     ) -> Tuple[Optional[bytes], Optional[Version]]:
-        """Retrieve last valid version from a tag. Any non-valid version tags are skipped.
+        """Retrieve the last valid version from a tag. Any non-valid version tags are skipped.
         Return a tuple with tag name and version or None.
 
         If `scope` is not None, only consider tags with this scope."""

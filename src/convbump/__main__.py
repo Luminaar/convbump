@@ -1,3 +1,4 @@
+import logging
 import sys
 from pathlib import Path
 from typing import Iterable, Optional, Tuple
@@ -6,9 +7,8 @@ import click
 from semver import VersionInfo as Version
 
 from convbump.conventional import ConventionalCommit, format_changelog
-
-from .git import Git
-from .version import DEFAULT_FIRST_VERSION, get_next_version
+from convbump.git import Git
+from convbump.version import DEFAULT_FIRST_VERSION, get_next_version
 
 
 def echo(*values: str) -> None:
@@ -55,6 +55,7 @@ def _run(
                 if not ignore_commit(ignored_patterns, conventional_commit):
                     conventional_commits.append(conventional_commit)
         except ValueError:
+            # logging.exception("Error parsing commit: %s", commit.subject)
             if not strict:
                 continue
             else:
@@ -173,3 +174,7 @@ def changelog(
     echo("Next version:", str(next_version))
     echo("\nChanges:")
     print(changelog)
+
+
+if __name__ == "__main__":
+    convbump()

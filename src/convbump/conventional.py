@@ -46,14 +46,14 @@ def parse_subject(subject: str) -> Tuple[str, Optional[str], bool, str]:
     if match:
         matched_dict = match.groupdict()
         if not matched_dict["subject"]:
-            raise ValueError(f"Invalid conventional commit subejct: {subject}")
+            raise ValueError(f"Invalid conventional commit subject: {subject}")
 
         commit_type = matched_dict["type"]
         is_breaking = bool(matched_dict.get("breaking", None))
 
         return (commit_type, matched_dict.get("scope"), is_breaking, matched_dict["subject"])
     else:
-        raise ValueError(f"Invalid conventional commit subejct: {subject}")
+        raise ValueError(f"Invalid conventional commit subject: {subject}")
 
 
 @dataclass(frozen=True)
