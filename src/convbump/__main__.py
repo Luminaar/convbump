@@ -48,17 +48,17 @@ def _run(
 
     conventional_commits = []
     for commit in git.list_commits(tag):
-        try:
-            if not directory or commit.affects_dir(directory):
-                conventional_commit = ConventionalCommit.from_git_commit(commit)
+        if not directory or commit.affects_dir(directory):
+            conventional_commit = ConventionalCommit.from_git_commit(commit)
+
+            # Check if this is a non-conventional commit in strict mode
+            if not conventional_commit.is_conventional and strict:
+                raise ValueError(f"Non-conventional commit found in strict mode: {commit.subject}")
+
+            # Only include conventional commits for version calculation
+            if conventional_commit.is_conventional:
                 if not ignore_commit(ignored_patterns, conventional_commit):
                     conventional_commits.append(conventional_commit)
-        except ValueError:
-            # logging.exception("Error parsing commit: %s", commit.subject)
-            if not strict:
-                continue
-            else:
-                raise
 
     if len(conventional_commits) == 0:
         raise ValueError("No commits found after the latest tag")

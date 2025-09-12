@@ -30,6 +30,120 @@ CHORE_WITH_SCOPE = "chore(deps): Update deps"
 
 OTHER_COMMIT = "fake: Some other type of commit"
 
+# Squashed merge scenarios
+SQUASHED_MERGE_WITH_FIX = """Refactoring and cleanup (#42)
+* Update deps
+
+* Code cleanup
+
+* Config tweaks
+
+* Performance improvements
+
+* Refactoring
+
+* Bug fixes
+
+* Minor improvements
+
+* Update docs
+
+* Final touches
+
+* fix: API endpoint caching (#27)
+
+* fix: database connection pooling
+
+* refactor: split logic to more files
+
+* perf: memory leak in parser
+
+* feat: supporting emojis
+
+* fix: validation error
+
+* fix: connection timeout
+
+* Additional cleanup
+
+* fix: error handling in processor
+
+* Remove deprecated tests
+
+* fix: memory optimization
+
+* fix: logging improvements
+
+* Update README
+
+* Bump dependencies
+
+Co-authored-by: Alice Dev <alice@example.com>
+Co-authored-by: Bob Coder <bob@example.com>"""
+
+SQUASHED_MERGE_WITH_FEAT = """Feature implementation (#15)
+* Initial work
+
+* Code refactoring
+
+* feat: add quantum flux capacitor
+
+* Performance tweaks
+
+* Update documentation"""
+
+SQUASHED_MERGE_WITH_BREAKING = """Major refactor (#99)
+* Begin refactoring
+
+* feat!: rewrite neural network core
+
+* Update unit tests
+
+* Fix documentation"""
+
+SQUASHED_MERGE_NO_CONVENTIONAL = """General improvements (#42)
+* Update dependencies
+
+* Fix typos
+
+* Optimize algorithms
+
+* Add debug logging"""
+
+# Priority-based selection test cases
+SQUASHED_MERGE_MIXED_PRIORITIES = """Mixed changes (#123)
+* Initial setup
+
+* fix: memory leak in parser
+
+* chore: update dependencies
+
+* feat: add new API endpoint
+
+* docs: update README
+
+* refactor: split logic to more files"""
+
+SQUASHED_MERGE_WITH_BREAKING_PRIORITY = """Major update (#456)
+* perf: optimize database queries
+
+* fix: validation error
+
+* feat!: complete API redesign
+
+* test: add unit tests
+
+* feat: add user preferences"""
+
+SQUASHED_MERGE_ONLY_FIXES = """Bug fixes (#789)
+* fix: connection timeout
+
+* fix: memory optimization
+
+* perf: memory leak in parser
+
+* fix: validation error"""
+
 
 @pytest.fixture(scope="session")
 def git_config() -> None:
