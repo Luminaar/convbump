@@ -5,9 +5,9 @@ from typing import Iterable, Optional, Tuple
 import click
 from semver import VersionInfo as Version
 
-from convbump.conventional import ConventionalCommit, format_changelog
-from convbump.git import Git
-from convbump.version import DEFAULT_FIRST_VERSION, get_next_version
+from .conventional import ConventionalCommit, format_changelog
+from .git import Git
+from .version import DEFAULT_FIRST_VERSION, get_next_version
 
 
 def echo(*values: str) -> None:
