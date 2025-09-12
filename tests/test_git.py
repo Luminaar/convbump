@@ -181,3 +181,77 @@ def test_get_tag_with_directory_no_match(create_git_repository: GitFactory) -> N
     git = create_git_repository([(INITIAL_COMMIT, "api/v1"), ("Second", "api/v1.1.0")])
 
     assert git.retrieve_last_version(directory) == (None, None)
+
+
+def test_list_commits_includes_chronologically_older_merged_commits(
+    create_git_repository: GitFactory,
+) -> None:
+    """Test that list_commits includes commits that are chronologically older than the from_tag
+    but are part of the target branch due to merging. This simulates the GitHub scenario where
+    a feature branch with older commits gets merged after a tag is created.
+
+    This test would fail with the old implementation that used chronological filtering.
+    """
+    import subprocess
+    import time
+
+    # Start with just the initial commit
+    commits = [INITIAL_COMMIT]
+    git = create_git_repository(commits)
+    repo_path = git.path
+
+    # Create and checkout feature branch
+    subprocess.check_call(["git", "checkout", "-b", "feature-branch"], cwd=repo_path)
+
+    # Add commits to feature branch (these will be chronologically older than the tag)
+    feature_commits = [
+        "fix(ui): overflow box",
+        "wip: migrations versions",
+        "chore: refactor columns handling",
+        "chore: refactor updates",
+        "feat: record transform",
+    ]
+
+    for commit_msg in feature_commits:
+        subprocess.check_call(["git", "commit", "--allow-empty", "-m", commit_msg], cwd=repo_path)
+
+    # Small delay to ensure chronological separation
+    time.sleep(0.1)
+
+    # Go back to master and create the tag AFTER the feature commits
+    # This makes the feature commits chronologically older than the tag
+    subprocess.check_call(["git", "checkout", "master"], cwd=repo_path)
+    subprocess.check_call(
+        ["git", "commit", "--allow-empty", "-m", "Prepare release"], cwd=repo_path
+    )
+    subprocess.check_call(["git", "tag", "-a", "-m", "Release v0.6.2", "v0.6.2"], cwd=repo_path)
+
+    # Small delay to ensure chronological separation
+    time.sleep(0.1)
+
+    # Add post-release commits
+    subprocess.check_call(
+        ["git", "commit", "--allow-empty", "-m", "Post-release fix"], cwd=repo_path
+    )
+
+    # Merge the feature branch (this brings in the chronologically older commits)
+    subprocess.check_call(
+        ["git", "merge", "--no-ff", "-m", "Merge feature branch", "feature-branch"], cwd=repo_path
+    )
+
+    # Now test our list_commits function
+    commits = git.list_commits(b"refs/tags/v0.6.2", None)
+
+    # We should get all commits from v0.6.2 to HEAD, including the feature branch commits
+    commit_subjects = [c.subject for c in commits]
+
+    # Should include the merge commit, post-release fix, and all feature commits
+    # The old implementation would miss the feature commits because they're chronologically older
+    assert len(commits) >= 7  # At least: merge commit + post-release fix + 5 feature commits
+    assert "Merge feature branch" in commit_subjects
+    assert "Post-release fix" in commit_subjects
+    assert "fix(ui): overflow box" in commit_subjects
+    assert "feat: record transform" in commit_subjects
+
+    # Should NOT include the "Prepare release" commit (it's at the tag boundary)
+    assert "Prepare release" not in commit_subjects
