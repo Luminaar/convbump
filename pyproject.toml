@@ -47,7 +47,7 @@ isort = "^5.9.1"
 convbump = "convbump.__main__"
 
 [tool.pytest.ini_options]
-#addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml --mypy"
+addopts = "--verbose --pylint --pylint-rcfile=pyproject.toml --mypy"
 
 [tool.poe.tasks]
 _black = "black ."

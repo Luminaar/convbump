@@ -88,7 +88,7 @@ def should_ignore(message: str, patterns: Iterable[str]) -> bool:
 
 
 def find_conventional_commit_in_body(
-    body: str, ignored_patterns: Optional[Collection[str]] = None
+    body: str, ignored_patterns: Optional[Iterable[str]] = None
 ) -> Optional[Tuple[str, Optional[str], bool, str]]:
     """
     Search for conventional commit patterns in the body text, respecting newlines.
@@ -155,7 +155,7 @@ class ConventionalCommit:
 
     @classmethod
     def from_git_commit(
-        cls, git_commit: Commit, ignored_patterns: Optional[Collection[str]] = None
+        cls, git_commit: Commit, ignored_patterns: Optional[Iterable[str]] = None
     ) -> ConventionalCommit:
         is_conventional = False
         parsed_from_body = False
