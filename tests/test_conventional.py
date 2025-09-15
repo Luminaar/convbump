@@ -18,12 +18,20 @@ from conftest import (
     FIX_WITH_SCOPE,
     INITIAL_COMMIT,
     OTHER_COMMIT,
+    SQUASHED_MERGE_MIXED_PRIORITIES,
+    SQUASHED_MERGE_NO_CONVENTIONAL,
+    SQUASHED_MERGE_ONLY_FIXES,
+    SQUASHED_MERGE_WITH_BREAKING,
+    SQUASHED_MERGE_WITH_BREAKING_PRIORITY,
+    SQUASHED_MERGE_WITH_FEAT,
+    SQUASHED_MERGE_WITH_FIX,
     GitFactory,
 )
 
 from convbump.conventional import (
     CommitType,
     ConventionalCommit,
+    find_conventional_commit_in_body,
     format_changelog,
     parse_subject,
 )
@@ -70,8 +78,10 @@ def create_conventional_commit(create_git_repository: GitFactory) -> Conventiona
 
 
 def test_conventinal_invalid(create_conventional_commit: ConventionalFactory) -> None:
-    with pytest.raises(ValueError):
-        create_conventional_commit(INITIAL_COMMIT)
+    # Non-conventional commits should be treated as OTHER type, not raise ValueError
+    conventional = create_conventional_commit(INITIAL_COMMIT)
+    assert conventional.commit_type == CommitType.OTHER
+    assert conventional.subject == INITIAL_COMMIT
 
 
 def make_commit(commit_message: str) -> Commit:
@@ -141,6 +151,167 @@ def test_conventional_format(message: str) -> None:
     conventional = ConventionalCommit.from_git_commit(git_commit)
     print()
     print(conventional.format())
+
+
+def test_squashed_merge_with_mixed_types() -> None:
+    """Test parsing a squashed merge with mixed commit types - should select highest priority."""
+    git_commit = make_commit(SQUASHED_MERGE_WITH_FIX)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find feat (highest priority) over fix commits in the body
+    assert conventional.commit_type == CommitType.FEAT
+    assert conventional.scope is None
+    assert conventional.is_breaking is False
+    assert conventional.subject == "supporting emojis"
+    assert conventional.raw_subject == "Refactoring and cleanup (#42)"
+
+
+def test_squashed_merge_with_feat() -> None:
+    """Test parsing a squashed merge that contains feat commits in the body."""
+    git_commit = make_commit(SQUASHED_MERGE_WITH_FEAT)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find the feat commit in the body
+    assert conventional.commit_type == CommitType.FEAT
+    assert conventional.scope is None
+    assert conventional.is_breaking is False
+    assert conventional.subject == "add quantum flux capacitor"
+    assert conventional.raw_subject == "Feature implementation (#15)"
+
+
+def test_squashed_merge_with_breaking() -> None:
+    """Test parsing a squashed merge that contains breaking changes in the body."""
+    git_commit = make_commit(SQUASHED_MERGE_WITH_BREAKING)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find the breaking feat commit in the body
+    assert conventional.commit_type == CommitType.FEAT
+    assert conventional.scope is None
+    assert conventional.is_breaking is True
+    assert conventional.subject == "rewrite neural network core"
+    assert conventional.raw_subject == "Major refactor (#99)"
+
+
+def test_squashed_merge_no_conventional() -> None:
+    """Test parsing a squashed merge that contains no conventional commits."""
+    git_commit = make_commit(SQUASHED_MERGE_NO_CONVENTIONAL)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should treat as OTHER since no conventional commits found
+    assert conventional.commit_type == CommitType.OTHER
+    assert conventional.scope is None
+    assert conventional.is_breaking is False
+    assert conventional.subject == "General improvements (#42)"
+    assert conventional.raw_subject == "General improvements (#42)"
+
+
+def test_find_conventional_commit_in_body() -> None:
+    """Test the helper function for finding conventional commits in body text."""
+    body = """* Some changes
+* More changes
+* fix: important bug fix
+* Additional changes"""
+
+    result = find_conventional_commit_in_body(body)
+    assert result is not None
+    commit_type, scope, is_breaking, subject = result
+    assert commit_type == "fix"
+    assert scope is None
+    assert is_breaking is False
+    assert subject == "important bug fix"
+
+    # Test with no conventional commits in body
+    body_no_conv = """* Some changes
+* More changes  
+* Additional changes"""
+
+    result = find_conventional_commit_in_body(body_no_conv)
+    assert result is None
+
+    # Test with empty body
+    assert find_conventional_commit_in_body("") is None
+    # Note: find_conventional_commit_in_body expects a string, not None
+    # In practice, we check for None before calling this function
+
+
+def test_priority_based_selection_mixed() -> None:
+    """Test that feat (minor bump) is selected over fix/chore/docs (patch bump)."""
+    git_commit = make_commit(SQUASHED_MERGE_MIXED_PRIORITIES)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find feat (priority 2, minor bump) over fix/chore/docs (priority 1, patch bump)
+    assert conventional.commit_type == CommitType.FEAT
+    assert conventional.scope is None
+    assert conventional.is_breaking is False
+    assert conventional.subject == "add new API endpoint"
+    assert conventional.raw_subject == "Mixed changes (#123)"
+
+
+def test_priority_based_selection_breaking_wins() -> None:
+    """Test that feat! (breaking, major bump) has highest priority."""
+    git_commit = make_commit(SQUASHED_MERGE_WITH_BREAKING_PRIORITY)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find feat! (priority 3, major bump) over feat (priority 2, minor bump), etc.
+    assert conventional.commit_type == CommitType.FEAT
+    assert conventional.scope is None
+    assert conventional.is_breaking is True
+    assert conventional.subject == "complete API redesign"
+    assert conventional.raw_subject == "Major update (#456)"
+
+
+def test_priority_based_selection_only_fixes() -> None:
+    """Test that when only fix and perf are present, both have same priority so first one is selected."""
+    git_commit = make_commit(SQUASHED_MERGE_ONLY_FIXES)
+    conventional = ConventionalCommit.from_git_commit(git_commit)
+
+    # Should find first commit since fix and perf both have priority 1 (patch version bump)
+    assert conventional.commit_type == CommitType.FIX
+    assert conventional.scope is None
+    assert conventional.is_breaking is False
+    assert conventional.subject == "connection timeout"  # First commit in the list
+    assert conventional.raw_subject == "Bug fixes (#789)"
+
+
+def test_version_impact_priority() -> None:
+    """Test the version impact priority calculation function directly."""
+    from convbump.conventional import VersionImpact, get_commit_version_impact
+
+    # Test semantic versioning priorities
+    # Breaking changes = major version bump
+    assert get_commit_version_impact("feat", True) == VersionImpact.MAJOR
+    assert get_commit_version_impact("fix", True) == VersionImpact.MAJOR
+    assert get_commit_version_impact("chore", True) == VersionImpact.MAJOR
+    assert get_commit_version_impact("unknown", True) == VersionImpact.MAJOR
+
+    # feat = minor version bump
+    assert get_commit_version_impact("feat", False) == VersionImpact.MINOR
+
+    # Everything else = patch version bump
+    assert get_commit_version_impact("fix", False) == VersionImpact.PATCH
+    assert get_commit_version_impact("perf", False) == VersionImpact.PATCH
+    assert get_commit_version_impact("refactor", False) == VersionImpact.PATCH
+    assert get_commit_version_impact("chore", False) == VersionImpact.PATCH
+    assert get_commit_version_impact("docs", False) == VersionImpact.PATCH
+    assert get_commit_version_impact("unknown", False) == VersionImpact.PATCH
+
+
+def test_priority_selection_preserves_scope() -> None:
+    """Test that scope is preserved in priority-based selection."""
+    body = """Multiple changes
+* fix(api): connection timeout
+* feat(ui): add dark mode
+* chore: update deps"""
+
+    result = find_conventional_commit_in_body(body)
+    assert result is not None
+    commit_type, scope, is_breaking, subject = result
+
+    # Should select feat over fix
+    assert commit_type == "feat"
+    assert scope == "ui"
+    assert is_breaking is False
+    assert subject == "add dark mode"
 
 
 @pytest.mark.skip()

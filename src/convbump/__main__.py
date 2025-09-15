@@ -5,8 +5,7 @@ from typing import Iterable, Optional, Tuple
 import click
 from semver import VersionInfo as Version
 
-from convbump.conventional import ConventionalCommit, format_changelog
-
+from .conventional import ConventionalCommit, format_changelog, should_ignore
 from .git import Git
 from .version import DEFAULT_FIRST_VERSION, get_next_version
 
@@ -19,10 +18,7 @@ def ignore_commit(patterns: Iterable[str], commit: ConventionalCommit) -> bool:
     """Check if any pattern is contained in the commit message."""
 
     message = "\n\n".join((commit.raw_subject, commit.body or ""))
-    for pattern in patterns:
-        if pattern and pattern in message:
-            return True
-    return False
+    return should_ignore(message, patterns)
 
 
 def _run(
@@ -49,16 +45,22 @@ def _run(
 
     conventional_commits = []
     for commit in git.list_commits(tag):
-        try:
-            if not directory or commit.affects_dir(directory):
-                conventional_commit = ConventionalCommit.from_git_commit(commit)
-                if not ignore_commit(ignored_patterns, conventional_commit):
+        if not directory or commit.affects_dir(directory):
+            conventional_commit = ConventionalCommit.from_git_commit(commit, ignored_patterns)
+
+            # Check if this is a non-conventional commit in strict mode
+            if not conventional_commit.is_conventional and strict:
+                raise ValueError(f"Non-conventional commit found in strict mode: {commit.subject}")
+
+            # Only include conventional commits for version calculation
+            if conventional_commit.is_conventional:
+                if conventional_commit.parsed_from_body:
+                    # This is a squashed commit - ignore filtering was already applied during body parsing
                     conventional_commits.append(conventional_commit)
-        except ValueError:
-            if not strict:
-                continue
-            else:
-                raise
+                else:
+                    # This is a regular commit - apply ignore patterns
+                    if not ignore_commit(ignored_patterns, conventional_commit):
+                        conventional_commits.append(conventional_commit)
 
     if len(conventional_commits) == 0:
         raise ValueError("No commits found after the latest tag")
@@ -173,3 +175,7 @@ def changelog(
     echo("Next version:", str(next_version))
     echo("\nChanges:")
     print(changelog)
+
+
+if __name__ == "__main__":
+    convbump()

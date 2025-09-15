@@ -7,6 +7,7 @@ from conftest import (
     FEATURE,
     FIX,
     INITIAL_COMMIT,
+    SQUASHED_MERGE_WITH_IGNORED,
     GitFactory,
 )
 
@@ -178,3 +179,39 @@ def test_ignore_prefix(create_git_repository: GitFactory) -> None:
         ValueError
     ):  # The chore commit should be skipped, so there are no new commits left
         _run(git, False, ignored_patterns=["chore"])
+
+
+def test_squashed_merge_with_ignored_commits(create_git_repository: GitFactory) -> None:
+    """Test that squashed commits properly handle ignored patterns.
+
+    The squashed commit contains:
+    - chore: update dependencies (should be ignored with "chore" pattern)
+    - fix: critical security fix (should not be ignored)
+    - feat: add new dashboard (should not be ignored)
+    - chore: update build scripts (should be ignored with "chore" pattern)
+
+    With "chore" ignored, should select feat (highest priority among non-ignored).
+    """
+    git = create_git_repository([(INITIAL_COMMIT, "v0.1.0"), SQUASHED_MERGE_WITH_IGNORED])
+
+    # Without ignore patterns - should select feat (highest priority)
+    next_version_no_ignore, _ = _run(git, False)
+    assert next_version_no_ignore == DEFAULT_FIRST_VERSION.bump_minor()  # feat -> minor bump
+
+    # With "chore" ignored - should still select feat (highest among non-ignored)
+    next_version_ignore_chore, _ = _run(git, False, ignored_patterns=["chore"])
+    assert next_version_ignore_chore == DEFAULT_FIRST_VERSION.bump_minor()  # feat -> minor bump
+
+    # With "feat" ignored - should select fix (highest among non-ignored)
+    next_version_ignore_feat, _ = _run(git, False, ignored_patterns=["feat"])
+    assert next_version_ignore_feat == DEFAULT_FIRST_VERSION.bump_patch()  # fix -> patch bump
+
+    # With both "feat" and "fix" ignored - should select chore (patch bump)
+    next_version_ignore_feat_fix, _ = _run(git, False, ignored_patterns=["feat", "fix"])
+    assert (
+        next_version_ignore_feat_fix == DEFAULT_FIRST_VERSION.bump_patch()
+    )  # chore -> patch bump
+
+    # With all commit types ignored - should raise ValueError (no commits left)
+    with pytest.raises(ValueError):  # No conventional commits left after ignoring
+        _run(git, False, ignored_patterns=["feat", "fix", "chore"])
