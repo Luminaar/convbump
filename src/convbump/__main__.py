@@ -1,3 +1,4 @@
+import logging
 import sys
 from pathlib import Path
 from typing import Iterable, Optional, Tuple
@@ -8,6 +9,8 @@ from semver import VersionInfo as Version
 from .conventional import ConventionalCommit, format_changelog, should_ignore
 from .git import Git
 from .version import DEFAULT_FIRST_VERSION, get_next_version
+
+logger = logging.getLogger(__name__)
 
 
 def echo(*values: str) -> None:
@@ -39,6 +42,7 @@ def _run(
         ignored_patterns = []
 
     tag, current_version = git.retrieve_last_version(directory)
+    logger.debug("Latest tag=%s on current_version=%s", tag, current_version)
     if not current_version:
         echo("Using default first version")
         return DEFAULT_FIRST_VERSION, ""
@@ -47,7 +51,7 @@ def _run(
     for commit in git.list_commits(tag):
         if not directory or commit.affects_dir(directory):
             conventional_commit = ConventionalCommit.from_git_commit(commit, ignored_patterns)
-
+            logger.debug("Processed conventional_commit=%s", conventional_commit)
             # Check if this is a non-conventional commit in strict mode
             if not conventional_commit.is_conventional and strict:
                 raise ValueError(f"Non-conventional commit found in strict mode: {commit.subject}")
@@ -72,14 +76,20 @@ def _run(
 
 
 @click.group()
-def convbump() -> None:
+@click.option("--verbose", "-v", is_flag=True, help="Show debug logs.")
+def convbump(verbose: bool) -> None:
     """convbump is a simple tool to work with conventional commits.
 
     Use the `version` command to find the next version in your repository
     based on the conventional commits.
 
     Use the `changelog` command to generate a nicely formatted changelog
-    (Github markdown compatible)."""
+    (Github markdown compatible).
+
+    Args:
+        verbose: If true, shows debug logs.
+    """
+    logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
 
 @convbump.command()
