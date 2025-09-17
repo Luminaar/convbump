@@ -1,3 +1,4 @@
+import logging
 import re
 from dataclasses import dataclass, field
 from operator import itemgetter
@@ -7,6 +8,8 @@ from typing import List, Optional, Set, Tuple
 from dulwich.objects import Commit as RawCommit
 from dulwich.repo import Repo
 from semver import VersionInfo as Version
+
+logger = logging.getLogger(__name__)
 
 # Default version tag regex. It is used to find the last valid git tag.
 # This regex will match the following tags: "v1", "v1.0", "v1.0.0"
@@ -116,9 +119,11 @@ class Git:
                 from_sha = self.repo.get_peeled(from_tag)
                 exclude = [from_sha]
 
+            logger.debug("Going to search commits include=%s, exclude=%s", include, exclude)
             # Get walker with proper include/exclude to implement revision range
             walker = self.repo.get_walker(include=include, exclude=exclude, reverse=True)
         except KeyError:  # Repo is empty
+            logger.debug("Got error, returning empty list.")
             return []
 
         commits: List[Commit] = []
@@ -127,7 +132,9 @@ class Git:
             message = commit.message.decode()
             subject, body = parse_message(message)
             paths = self.get_commit_paths(commit)
-            commits.append(Commit(commit.id, subject, body or None, paths))
+            c = Commit(commit.id, subject, body or None, paths)
+            logger.debug("Found commit=%s", c)
+            commits.append(c)
 
         return commits
 

@@ -13,6 +13,8 @@ based on the conventional commits.
 Use the `changelog` command to generate a nicely formatted changelog
 (Github markdown compatible).
 
+Use `convbump --verbose version` to see more information.
+
 ## Requirements
 `convbump` does not have any external dependencies.
 
